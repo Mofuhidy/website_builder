@@ -3,7 +3,7 @@
 import { useBuilderStore } from "@/store/builder-store";
 
 export function InspectorPanel() {
-  const { activeTab } = useBuilderStore();
+  const activeTab = useBuilderStore((state) => state?.activeTab);
 
   let title = "";
   let content = null;

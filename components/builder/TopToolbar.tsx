@@ -18,13 +18,13 @@ export function TopToolbar() {
       </div>
 
       {/* Center */}
-      <div className="flex items-center">
+      <div className="hidden md:flex items-center">
         <DeviceToggle />
       </div>
 
       {/* Left side */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden lg:flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
           <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تراجع">
             <Undo className="w-4 h-4" />
           </button>
@@ -33,18 +33,18 @@ export function TopToolbar() {
           </button>
         </div>
 
-        <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تغيير اللغة">
+        <button className="hidden sm:block p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تغيير اللغة">
           <Globe className="w-4 h-4" />
         </button>
 
-        <button className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-border-color bg-white hover:bg-gray-50 transition-colors">
+        <button className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-border-color bg-white hover:bg-gray-50 transition-colors">
           <ExternalLink className="w-4 h-4" />
-          زيارة الموقع
+          <span className="hidden lg:inline">زيارة الموقع</span>
         </button>
 
-        <button className="flex items-center gap-2 px-4 py-1.5 text-sm rounded bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm">
+        <button className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm">
           <Save className="w-4 h-4" />
-          حفظ التغييرات
+          <span className="hidden sm:inline">حفظ التغييرات</span>
         </button>
       </div>
     </header>

@@ -13,7 +13,8 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function RightRail() {
-  const { activeTab, setActiveTab } = useBuilderStore();
+  const activeTab = useBuilderStore((state) => state?.activeTab);
+  const setActiveTab = useBuilderStore((state) => state?.setActiveTab);
 
   return (
     <div className="w-20 flex flex-col items-center py-4 gap-4 bg-white shrink-0 border-l border-border-color">
