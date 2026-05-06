@@ -1,47 +1,38 @@
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
+import { useBuilderStore } from "@/store/builder-store";
 import { SectionRegistryItem } from "@/lib/section-registry";
-import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/cn";
 
 interface DraggableSectionCardProps {
   section: SectionRegistryItem;
-  isOverlay?: boolean;
 }
 
-export function DraggableSectionCard({ section, isOverlay }: DraggableSectionCardProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `registry-${section.id}`,
-    data: {
-      type: "sidebar-section",
-      sectionType: section.id,
-      defaultData: section.defaultData,
-    },
-    disabled: isOverlay, // Disable drag behavior if it's already an overlay
-  });
+export function DraggableSectionCard({ section }: DraggableSectionCardProps) {
+  const addBlock = useBuilderStore((state) => state?.addBlock);
 
-  const style = {
-    transform: CSS.Translate.toString(transform),
+  const handleClick = () => {
+    addBlock({
+      id: crypto.randomUUID(),
+      type: section.id,
+      data: section.defaultData,
+    });
   };
 
   const Icon = section.icon;
 
   return (
-    <div
-      ref={isOverlay ? undefined : setNodeRef}
-      style={isOverlay ? undefined : style}
-      {...(isOverlay ? {} : listeners)}
-      {...(isOverlay ? {} : attributes)}
+    <button
+      type="button"
+      onClick={handleClick}
       className={cn(
-        "flex items-center gap-3 p-3 bg-white border border-border-color rounded-md cursor-grab active:cursor-grabbing hover:border-accent hover:shadow-sm transition-all",
-        isDragging && !isOverlay && "opacity-50 border-dashed"
+        "flex items-center gap-3 p-3 w-full bg-white border border-border-color rounded-md cursor-pointer hover:border-accent hover:shadow-sm transition-all text-right"
       )}
     >
-      <div className="flex items-center justify-center w-8 h-8 rounded bg-gray-50 text-muted-foreground">
+      <div className="flex items-center justify-center w-8 h-8 rounded bg-gray-50 text-muted-foreground shrink-0">
         <Icon className="w-4 h-4" />
       </div>
-      <span className="font-medium text-sm">{section.name}</span>
-    </div>
+      <span className="font-medium text-sm flex-1">{section.name}</span>
+    </button>
   );
 }
