@@ -5,12 +5,14 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const cairo = Cairo({ subsets: ["arabic"] });
 
+import { JsonValue } from "@/lib/section-registry";
+
 interface FAQSectionProps {
-  data: any;
+  data: Record<string, JsonValue>;
 }
 
 export function FAQSection({ data }: FAQSectionProps) {
-  const defaultFaqs = [
+  const faqs = (data.faqs as { q: string; a: string }[]) || [
     { q: "كيف يمكنني البدء؟", a: "يمكنك البدء عن طريق اختيار القالب المناسب لك والبدء في تخصيصه." },
     { q: "هل المنصة تدعم اللغة العربية؟", a: "نعم، المنصة تدعم اللغة العربية بشكل كامل مع خطوط عربية جميلة." },
     { q: "ما هي تكلفة الخدمة؟", a: "نوفر باقات متنوعة تناسب جميع الاحتياجات والميزانيات." },
@@ -27,7 +29,7 @@ export function FAQSection({ data }: FAQSectionProps) {
         </div>
 
         <div className="space-y-4">
-          {(data.faqs || defaultFaqs).map((faq: any, idx: number) => (
+          {faqs.map((faq, idx) => (
             <div key={idx} className="border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <button className="w-full flex items-center justify-between p-6 text-right bg-white hover:bg-gray-50 transition-colors group">
                 <span className="font-bold text-gray-900">{faq.q}</span>

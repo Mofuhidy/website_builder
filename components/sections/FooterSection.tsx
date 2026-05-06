@@ -4,11 +4,14 @@ import { Cairo } from "next/font/google";
 
 const cairo = Cairo({ subsets: ["arabic"] });
 
+import { JsonValue } from "@/lib/section-registry";
+
 interface FooterSectionProps {
-  data: any;
+  data: Record<string, JsonValue>;
 }
 
 export function FooterSection({ data }: FooterSectionProps) {
+  const copyright = (data.copyright as string) || "© 2026 جميع الحقوق محفوظة.";
   return (
     <footer className={`py-12 px-6 bg-gray-900 text-white ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
@@ -24,7 +27,7 @@ export function FooterSection({ data }: FooterSectionProps) {
         </div>
 
         <div className="text-gray-500 text-sm">
-          {data.copyright || "© 2026 جميع الحقوق محفوظة."}
+          {copyright}
         </div>
       </div>
     </footer>

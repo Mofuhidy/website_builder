@@ -13,15 +13,12 @@ import {
   DragEndEvent,
 } from "@dnd-kit/core";
 import { useBuilderStore } from "@/store/builder-store";
-import { DraggableSectionCard } from "./DraggableSectionCard";
-import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SortableBlock } from "./SortableBlock";
 
 export function BuilderShell() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const moveBlock = useBuilderStore((state) => state?.moveBlock);
-  const insertBlock = useBuilderStore((state) => state?.insertBlock);
   const blocks = useBuilderStore((state) => state?.blocks);
 
   const handleDragStart = (event: DragStartEvent) => {

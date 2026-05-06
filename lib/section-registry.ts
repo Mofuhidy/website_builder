@@ -7,12 +7,26 @@ import {
   ShoppingBagIcon,
   ChatBubbleLeftRightIcon,
   PhoneIcon,
-  UserGroupIcon,
   ChartBarIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  Squares2X2Icon,
+  MegaphoneIcon,
+  ViewColumnsIcon
 } from "@heroicons/react/24/outline";
 
-export type SectionType = "hero" | "features" | "text" | "gallery" | "footer" | "products" | "stats" | "partners" | "services" | "testimonials" | "contact" | "faq";
+export type SectionType = 
+  | "header" 
+  | "hero" 
+  | "services" 
+  | "features" 
+  | "cta" 
+  | "footer"
+  | "text" 
+  | "gallery" 
+  | "stats" 
+  | "testimonials" 
+  | "faq" 
+  | "contact";
 
 export type JsonValue =
   | string
@@ -22,11 +36,18 @@ export type JsonValue =
   | { [key: string]: JsonValue }
   | JsonValue[];
 
+export interface EditableField {
+  key: string;
+  label: string;
+  type: "text" | "textarea" | "image" | "list";
+}
+
 export interface SectionRegistryItem {
   id: SectionType;
   name: string;
   icon: React.ElementType;
   defaultData: Record<string, JsonValue>;
+  editableFields: EditableField[];
 }
 
 export interface SectionCategory {
@@ -37,123 +58,111 @@ export interface SectionCategory {
 
 export const CATEGORY_REGISTRY: SectionCategory[] = [
   {
-    id: "hero",
-    name: "الواجهة الرئيسية",
+    id: "main",
+    name: "الأقسام الرئيسية",
     items: [
+      {
+        id: "header",
+        name: "رأس الصفحة",
+        icon: ViewColumnsIcon,
+        defaultData: { logo: "رِكاز", links: ["الرئيسية", "المميزات", "اتصل بنا"] },
+        editableFields: [
+          { key: "logo", label: "الشعار", type: "text" }
+        ]
+      },
       {
         id: "hero",
         name: "قسم الترحيب",
         icon: WindowIcon,
-        defaultData: { title: "عنوان رئيسي جذاب", subtitle: "وصف فرعي" },
-      }
-    ]
-  },
-  {
-    id: "content",
-    name: "المحتوى",
-    items: [
-      {
-        id: "text",
-        name: "نص ومقال",
-        icon: DocumentTextIcon,
-        defaultData: { content: "نص..." },
-      },
-      {
-        id: "gallery",
-        name: "معرض الصور",
-        icon: PhotoIcon,
-        defaultData: { images: [] },
-      }
-    ]
-  },
-  {
-    id: "features",
-    name: "المميزات",
-    items: [
-      {
-        id: "features",
-        name: "المميزات",
-        icon: StarIcon,
-        defaultData: { title: "لماذا تختارنا؟" },
-      }
-    ]
-  },
-  {
-    id: "products",
-    name: "المنتجات",
-    items: [
-      {
-        id: "products",
-        name: "قائمة المنتجات",
-        icon: ShoppingBagIcon,
-        defaultData: { title: "منتجاتنا" },
-      }
-    ]
-  },
-  {
-    id: "stats",
-    name: "إحصائيات",
-    items: [
-      {
-        id: "stats",
-        name: "أرقام وإحصائيات",
-        icon: ChartBarIcon,
-        defaultData: { stats: [] },
-      }
-    ]
-  },
-  {
-    id: "partners",
-    name: "الشركاء",
-    items: [
-      {
-        id: "partners",
-        name: "شركاء النجاح",
-        icon: UserGroupIcon,
-        defaultData: { partners: [] },
-      }
-    ]
-  },
-  {
-    id: "testimonials",
-    name: "آراء العملاء",
-    items: [
-      {
-        id: "testimonials",
-        name: "تعليقات العملاء",
-        icon: ChatBubbleLeftRightIcon,
-        defaultData: { testimonials: [] },
-      }
-    ]
-  },
-  {
-    id: "faq",
-    name: "الأسئلة الشائعة",
-    items: [
-      {
-        id: "faq",
-        name: "أسئلة وأجوبة",
-        icon: QuestionMarkCircleIcon,
-        defaultData: { faqs: [] },
-      }
-    ]
-  },
-  {
-    id: "contact",
-    name: "معلومات التواصل",
-    items: [
-      {
-        id: "contact",
-        name: "تواصل معنا",
-        icon: PhoneIcon,
-        defaultData: { phone: "", email: "" },
+        defaultData: { 
+          title: "ابدأ رحلتك الآن", 
+          subtitle: "أنشئ صفحة متجاوبة باستخدام أقسام قابلة للتعديل.",
+          buttonText: "ابدأ الآن"
+        },
+        editableFields: [
+          { key: "title", label: "العنوان", type: "text" },
+          { key: "subtitle", label: "الوصف", type: "textarea" },
+          { key: "buttonText", label: "نص الزر", type: "text" }
+        ]
       },
       {
         id: "footer",
         name: "تذييل الصفحة",
         icon: LinkIcon,
-        defaultData: { copyright: "© 2026" },
+        defaultData: { copyright: "© 2026 جميع الحقوق محفوظة." },
+        editableFields: [
+          { key: "copyright", label: "حقوق النشر", type: "text" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "content",
+    name: "المحتوى والخدمات",
+    items: [
+      {
+        id: "services",
+        name: "خدماتنا",
+        icon: Squares2X2Icon,
+        defaultData: { title: "خدمات متميزة" },
+        editableFields: [
+          { key: "title", label: "العنوان", type: "text" }
+        ]
+      },
+      {
+        id: "features",
+        name: "المميزات",
+        icon: StarIcon,
+        defaultData: { title: "لماذا تختارنا؟" },
+        editableFields: [
+          { key: "title", label: "العنوان", type: "text" }
+        ]
+      },
+      {
+        id: "cta",
+        name: "دعوة للعمل (CTA)",
+        icon: MegaphoneIcon,
+        defaultData: { title: "جاهز للبدء؟", buttonText: "تواصل معنا" },
+        editableFields: [
+          { key: "title", label: "العنوان", type: "text" },
+          { key: "buttonText", label: "نص الزر", type: "text" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "others",
+    name: "أقسام إضافية",
+    items: [
+      {
+        id: "faq",
+        name: "الأسئلة الشائعة",
+        icon: QuestionMarkCircleIcon,
+        defaultData: { title: "الأسئلة الشائعة" },
+        editableFields: [{ key: "title", label: "العنوان", type: "text" }]
+      },
+      {
+        id: "testimonials",
+        name: "آراء العملاء",
+        icon: ChatBubbleLeftRightIcon,
+        defaultData: { title: "ماذا يقول عملاؤنا" },
+        editableFields: [{ key: "title", label: "العنوان", type: "text" }]
+      },
+      {
+        id: "gallery",
+        name: "معرض الصور",
+        icon: PhotoIcon,
+        defaultData: { title: "معرض الأعمال" },
+        editableFields: [{ key: "title", label: "العنوان", type: "text" }]
+      },
+      {
+        id: "contact",
+        name: "تواصل معنا",
+        icon: PhoneIcon,
+        defaultData: { title: "ابق على تواصل" },
+        editableFields: [{ key: "title", label: "العنوان", type: "text" }]
       }
     ]
   }
 ];
+
