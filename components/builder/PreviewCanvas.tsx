@@ -11,9 +11,9 @@ export function PreviewCanvas() {
       <div
         className={cn(
           "bg-white min-h-[800px] shadow-sm border border-border-color flex items-center justify-center text-muted-foreground transition-all duration-300 rounded-lg",
-          deviceMode === "desktop"
-            ? "w-full max-w-5xl"
-            : "w-full max-w-[375px]",
+          deviceMode === "desktop" && "w-full max-w-5xl",
+          deviceMode === "tablet" && "w-full max-w-[768px]",
+          deviceMode === "mobile" && "w-full max-w-[375px]",
         )}>
         مساحة الشغل (معاينة)
       </div>
