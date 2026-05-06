@@ -1,7 +1,17 @@
 "use client";
 
 import { DeviceToggle } from "./DeviceToggle";
-import { ArrowRight, Globe, Save, Undo, Redo, ExternalLink, Menu, Monitor, Smartphone } from "lucide-react";
+import {
+  ArrowRightIcon,
+  GlobeAltIcon,
+  DocumentCheckIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  ArrowTopRightOnSquareIcon,
+  Bars3Icon,
+  ComputerDesktopIcon,
+  DevicePhoneMobileIcon,
+} from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +30,7 @@ export function TopToolbar() {
       {/* Right side (starts visually on the right in RTL) */}
       <div className="flex items-center gap-4">
         <button className="text-muted-foreground hover:text-foreground transition-colors" aria-label="العودة">
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRightIcon className="w-5 h-5" />
         </button>
         <div className="font-semibold text-lg flex items-center gap-2">
           الرئيسية
@@ -38,19 +48,19 @@ export function TopToolbar() {
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
           <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تراجع">
-            <Undo className="w-4 h-4" />
+            <ArrowUturnLeftIcon className="w-4 h-4" />
           </button>
           <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="إعادة">
-            <Redo className="w-4 h-4" />
+            <ArrowUturnRightIcon className="w-4 h-4" />
           </button>
         </div>
 
         <button className="hidden sm:block p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تغيير اللغة">
-          <Globe className="w-4 h-4" />
+          <GlobeAltIcon className="w-4 h-4" />
         </button>
 
         <button className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-border-color bg-white hover:bg-gray-50 transition-colors">
-          <ExternalLink className="w-4 h-4" />
+          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
           <span className="hidden lg:inline">زيارة الموقع</span>
         </button>
 
@@ -60,35 +70,35 @@ export function TopToolbar() {
             <DropdownMenuTrigger
               render={<Button variant="outline" size="icon" className="w-9 h-9 border-border-color" />}
             >
-              <Menu className="w-4 h-4" />
+              <Bars3Icon className="w-4 h-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent dir="rtl" align="end">
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Undo className="w-4 h-4" /> تراجع
+                <ArrowUturnLeftIcon className="w-4 h-4" /> تراجع
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Redo className="w-4 h-4" /> إعادة
+                <ArrowUturnRightIcon className="w-4 h-4" /> إعادة
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setDeviceMode("desktop")}>
-                <Monitor className="w-4 h-4" /> معاينة ككمبيوتر
+                <ComputerDesktopIcon className="w-4 h-4" /> معاينة ككمبيوتر
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setDeviceMode("mobile")}>
-                <Smartphone className="w-4 h-4" /> معاينة كجوال
+                <DevicePhoneMobileIcon className="w-4 h-4" /> معاينة كجوال
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Globe className="w-4 h-4" /> تغيير اللغة
+                <GlobeAltIcon className="w-4 h-4" /> تغيير اللغة
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <ExternalLink className="w-4 h-4" /> زيارة الموقع
+                <ArrowTopRightOnSquareIcon className="w-4 h-4" /> زيارة الموقع
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         <button className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm">
-          <Save className="w-4 h-4" />
+          <DocumentCheckIcon className="w-4 h-4" />
           <span className="hidden sm:inline">حفظ التغييرات</span>
         </button>
       </div>

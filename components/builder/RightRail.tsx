@@ -1,15 +1,21 @@
 "use client";
 
 import { useBuilderStore, TabType } from "@/store/builder-store";
-import { LayoutTemplate, Type, Palette, Code, Blocks } from "lucide-react";
+import {
+  WindowIcon,
+  LanguageIcon,
+  SwatchIcon,
+  CodeBracketIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
 import { cn } from "@/lib/cn";
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
-  { id: "pages", label: "الصفحات", icon: <LayoutTemplate className="w-5 h-5" /> },
-  { id: "fonts", label: "الخطوط", icon: <Type className="w-5 h-5" /> },
-  { id: "colors", label: "الألوان", icon: <Palette className="w-5 h-5" /> },
-  { id: "css", label: "CSS", icon: <Code className="w-5 h-5" /> },
-  { id: "sections", label: "الأقسام", icon: <Blocks className="w-5 h-5" /> },
+  { id: "pages", label: "الصفحات", icon: <WindowIcon className="w-5 h-5" /> },
+  { id: "fonts", label: "الخطوط", icon: <LanguageIcon className="w-5 h-5" /> },
+  { id: "colors", label: "الألوان", icon: <SwatchIcon className="w-5 h-5" /> },
+  { id: "css", label: "CSS", icon: <CodeBracketIcon className="w-5 h-5" /> },
+  { id: "sections", label: "الأقسام", icon: <Squares2X2Icon className="w-5 h-5" /> },
 ];
 
 export function RightRail() {

@@ -1,6 +1,14 @@
 "use client";
 
 import { useBuilderStore } from "@/store/builder-store";
+import { CATEGORY_REGISTRY } from "@/lib/section-registry";
+import { DraggableSectionCard } from "./DraggableSectionCard";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export function InspectorPanel() {
   const activeTab = useBuilderStore((state) => state?.activeTab);
@@ -27,7 +35,24 @@ export function InspectorPanel() {
       break;
     case "sections":
       title = "الأقسام";
-      content = <div className="text-sm text-muted-foreground">مكتبة الأقسام...</div>;
+      content = (
+        <Accordion className="w-full">
+          {CATEGORY_REGISTRY.map((category) => (
+            <AccordionItem key={category.id} value={category.id}>
+              <AccordionTrigger className="font-medium text-sm py-3 hover:no-underline hover:text-accent transition-colors">
+                {category.name}
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-2 pt-1 pb-3">
+                  {category.items.map((section) => (
+                    <DraggableSectionCard key={section.id} section={section} />
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      );
       break;
   }
 
