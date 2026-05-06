@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export type TabType = "pages" | "fonts" | "colors" | "css" | "sections";
-export type DeviceMode = "desktop" | "mobile";
+export type DeviceMode = "desktop" | "tablet" | "mobile";
 
 interface BuilderState {
   activeTab: TabType;

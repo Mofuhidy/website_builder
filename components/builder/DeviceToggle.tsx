@@ -1,7 +1,7 @@
 "use client";
 
 import { useBuilderStore } from "@/store/builder-store";
-import { ComputerDesktopIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/cn";
 
 export function DeviceToggle() {
@@ -14,12 +14,23 @@ export function DeviceToggle() {
         type="button"
         onClick={() => setDeviceMode("desktop")}
         className={cn(
-          "p-1.5 rounded transition-colors text-muted-foreground",
+          "p-1.5 rounded transition-colors text-muted-foreground hover:text-foreground",
           deviceMode === "desktop" && "bg-white text-foreground shadow-sm"
         )}
         aria-label="Desktop Preview"
       >
         <ComputerDesktopIcon className="w-4 h-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => setDeviceMode("tablet")}
+        className={cn(
+          "p-1.5 rounded transition-colors text-muted-foreground hover:text-foreground",
+          deviceMode === "tablet" && "bg-white text-foreground shadow-sm"
+        )}
+        aria-label="Tablet Preview"
+      >
+        <DeviceTabletIcon className="w-4 h-4" />
       </button>
       <button
         type="button"
