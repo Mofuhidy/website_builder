@@ -6,6 +6,8 @@ import { BuilderBlock, useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
+import { SectionRenderer } from "../sections/SectionRenderer";
+
 interface SortableBlockProps {
   block: BuilderBlock;
 }
@@ -44,22 +46,17 @@ export function SortableBlock({ block }: SortableBlockProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        "p-4 border border-dashed rounded bg-white relative group cursor-grab active:cursor-grabbing",
-        isDragging ? "opacity-50 z-50 shadow-xl border-accent" : "border-gray-200 hover:border-gray-300",
+        "relative group cursor-grab active:cursor-grabbing rounded-lg overflow-hidden transition-all",
+        isDragging ? "opacity-50 z-50 shadow-2xl ring-2 ring-accent" : "hover:ring-1 hover:ring-gray-200",
       )}
     >
-      <div>
-        <span className="text-sm font-bold text-gray-500">[{block.type}]</span>
-        <pre className="text-xs mt-2 overflow-auto bg-gray-50 p-2 rounded">
-          {JSON.stringify(block.data, null, 2)}
-        </pre>
-      </div>
+      <SectionRenderer block={block} />
 
       {/* Delete Button */}
       <button
         type="button"
         onClick={handleDelete}
-        className="absolute top-2 left-2 p-1 text-gray-400 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur shadow-sm rounded-full text-gray-400 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity z-20 border border-gray-100"
       >
         <XMarkIcon className="w-5 h-5" />
       </button>

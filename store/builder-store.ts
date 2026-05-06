@@ -20,6 +20,7 @@ interface BuilderState {
   insertBlock: (block: BuilderBlock, index: number) => void;
   moveBlock: (oldIndex: number, newIndex: number) => void;
   removeBlock: (id: string) => void;
+  setBlocks: (blocks: BuilderBlock[]) => void;
 }
 
 export const useBuilderStore = create<BuilderState>((set) => ({
@@ -29,6 +30,7 @@ export const useBuilderStore = create<BuilderState>((set) => ({
   setDeviceMode: (mode) => set({ deviceMode: mode }),
   blocks: [],
   addBlock: (block) => set((state) => ({ blocks: [...state.blocks, block] })),
+  setBlocks: (blocks) => set({ blocks }),
   insertBlock: (block, index) =>
     set((state) => {
       const newBlocks = [...state.blocks];
