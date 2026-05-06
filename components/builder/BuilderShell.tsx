@@ -10,7 +10,6 @@ import {
   DndContext,
   DragOverlay,
   DragStartEvent,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import { DraggableSectionCard } from "./DraggableSectionCard";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";

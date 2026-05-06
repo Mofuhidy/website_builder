@@ -14,11 +14,19 @@ import {
 
 export type SectionType = "hero" | "features" | "text" | "gallery" | "footer" | "products" | "stats" | "partners" | "services" | "testimonials" | "contact" | "faq";
 
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonValue }
+  | JsonValue[];
+
 export interface SectionRegistryItem {
   id: SectionType;
   name: string;
   icon: React.ElementType;
-  defaultData: Record<string, any>;
+  defaultData: Record<string, JsonValue>;
 }
 
 export interface SectionCategory {
