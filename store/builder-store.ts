@@ -19,6 +19,8 @@ interface BuilderState {
   blocks: BuilderBlock[];
   isDirty: boolean;
   markSaved: () => void;
+  lastAddedBlockId: string | null;
+  clearLastAdded: () => void;
   selectedBlockId: string | null;
   selectBlock: (id: string | null) => void;
   addBlock: (block: BuilderBlock) => void;
@@ -42,11 +44,13 @@ export const useBuilderStore = create<BuilderState>()(
       blocks: [],
       isDirty: false,
       markSaved: () => set({ isDirty: false }),
+      lastAddedBlockId: null,
+      clearLastAdded: () => set({ lastAddedBlockId: null }),
       selectedBlockId: null,
       selectBlock: (id) => set({ selectedBlockId: id }),
 
       addBlock: (block) =>
-        set((state) => ({ blocks: [...state.blocks, block], isDirty: true })),
+        set((state) => ({ blocks: [...state.blocks, block], isDirty: true, lastAddedBlockId: block.id })),
 
       setBlocks: (blocks) => set({ blocks, isDirty: true }),
 
@@ -54,7 +58,7 @@ export const useBuilderStore = create<BuilderState>()(
         set((state) => {
           const newBlocks = [...state.blocks];
           newBlocks.splice(index, 0, block);
-          return { blocks: newBlocks, isDirty: true };
+          return { blocks: newBlocks, isDirty: true, lastAddedBlockId: block.id };
         }),
 
       duplicateBlock: (id) =>
@@ -69,7 +73,7 @@ export const useBuilderStore = create<BuilderState>()(
           };
           const newBlocks = [...state.blocks];
           newBlocks.splice(idx + 1, 0, clone);
-          return { blocks: newBlocks, isDirty: true };
+          return { blocks: newBlocks, isDirty: true, lastAddedBlockId: clone.id };
         }),
 
       moveBlock: (oldIndex, newIndex) =>

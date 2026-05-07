@@ -1,7 +1,8 @@
 "use client";
 
 import { DeviceToggle } from "./DeviceToggle";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   ArrowRightIcon,
   GlobeAltIcon,
@@ -14,6 +15,7 @@ import {
   DevicePhoneMobileIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
@@ -32,17 +34,28 @@ export function TopToolbar() {
   const isDirty = useBuilderStore(state => state.isDirty);
   const markSaved = useBuilderStore(state => state.markSaved);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [exportDone, setExportDone] = useState(false);
 
-  const handleExport = () => {
-    const dataStr = JSON.stringify(blocks, null, 2);
+  const MIN_LOADING_MS = 900;
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    const [dataStr] = await Promise.all([
+      Promise.resolve(JSON.stringify(blocks, null, 2)),
+      new Promise(r => setTimeout(r, MIN_LOADING_MS)),
+    ]);
     const dataUri =
-      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-    const exportFileDefaultName = "website-design.json";
-
+      "data:application/json;charset=utf-8," +
+      encodeURIComponent(dataStr as string);
     const linkElement = document.createElement("a");
     linkElement.setAttribute("href", dataUri);
-    linkElement.setAttribute("download", exportFileDefaultName);
+    linkElement.setAttribute("download", "website-design.json");
     linkElement.click();
+    setIsExporting(false);
+    setExportDone(true);
+    setTimeout(() => setExportDone(false), 2500);
   };
 
   const handleImportClick = () => {
@@ -51,22 +64,31 @@ export function TopToolbar() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const content = e.target?.result as string;
-          const importedBlocks = JSON.parse(content);
-          if (Array.isArray(importedBlocks)) {
-            setBlocks(importedBlocks);
-          }
-        } catch (error) {
-          console.error("Failed to parse JSON:", error);
-          alert("فشل في استيراد الملف. تأكد من أنه ملف JSON صالح.");
+    if (!file) return;
+    setIsImporting(true);
+    const startTime = Date.now();
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const content = e.target?.result as string;
+        const importedBlocks = JSON.parse(content);
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+        if (Array.isArray(importedBlocks)) {
+          setBlocks(importedBlocks);
+        } else {
+          toast.error("الملف لا يحتوي على تصميم صالح.");
         }
-      };
-      reader.readAsText(file);
-    }
+      } catch (error) {
+        console.error("Failed to parse JSON:", error);
+        toast.error("فشل في استيراد الملف. تأكد من أنه ملف JSON صالح.");
+      } finally {
+        setIsImporting(false);
+        event.target.value = "";
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -115,18 +137,65 @@ export function TopToolbar() {
 
         <button
           onClick={handleImportClick}
-          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors"
+          disabled={isImporting}
+          className="hidden sm:flex items-center gap-1.5 p-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           aria-label="استيراد"
           title="استيراد JSON">
-          <ArrowUpTrayIcon className="w-4 h-4" />
+          {isImporting ? (
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              />
+            </svg>
+          ) : (
+            <ArrowDownTrayIcon className="w-4 h-4" />
+          )}
         </button>
 
         <button
           onClick={handleExport}
-          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors"
+          disabled={isExporting}
+          className="hidden sm:flex items-center gap-1.5 p-2 transition-colors disabled:opacity-50"
           aria-label="تصدير"
+          style={{ color: exportDone ? "#22c55e" : undefined }}
           title="تصدير JSON">
-          <ArrowDownTrayIcon className="w-4 h-4" />
+          {isExporting ? (
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              />
+            </svg>
+          ) : exportDone ? (
+            <CheckCircleIcon className="w-4 h-4" />
+          ) : (
+            <ArrowUpTrayIcon className="w-4 h-4" />
+          )}
         </button>
 
         <button
@@ -157,12 +226,12 @@ export function TopToolbar() {
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onClick={handleImportClick}>
-                <ArrowUpTrayIcon className="w-4 h-4" /> استيراد
+                <ArrowDownTrayIcon className="w-4 h-4" /> استيراد
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onClick={handleExport}>
-                <ArrowDownTrayIcon className="w-4 h-4" /> تصدير
+                <ArrowUpTrayIcon className="w-4 h-4" /> تصدير
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer">
