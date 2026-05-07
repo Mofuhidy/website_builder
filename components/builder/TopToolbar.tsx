@@ -46,7 +46,9 @@ export function TopToolbar() {
       Promise.resolve(JSON.stringify(blocks, null, 2)),
       new Promise(r => setTimeout(r, MIN_LOADING_MS)),
     ]);
-    const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr as string);
+    const dataUri =
+      "data:application/json;charset=utf-8," +
+      encodeURIComponent(dataStr as string);
     const linkElement = document.createElement("a");
     linkElement.setAttribute("href", dataUri);
     linkElement.setAttribute("download", "website-design.json");
@@ -140,12 +142,26 @@ export function TopToolbar() {
           aria-label="استيراد"
           title="استيراد JSON">
           {isImporting ? (
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              />
             </svg>
           ) : (
-            <ArrowUpTrayIcon className="w-4 h-4" />
+            <ArrowDownTrayIcon className="w-4 h-4" />
           )}
         </button>
 
@@ -157,14 +173,28 @@ export function TopToolbar() {
           style={{ color: exportDone ? "#22c55e" : undefined }}
           title="تصدير JSON">
           {isExporting ? (
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              />
             </svg>
           ) : exportDone ? (
             <CheckCircleIcon className="w-4 h-4" />
           ) : (
-            <ArrowDownTrayIcon className="w-4 h-4" />
+            <ArrowUpTrayIcon className="w-4 h-4" />
           )}
         </button>
 
@@ -196,12 +226,12 @@ export function TopToolbar() {
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onClick={handleImportClick}>
-                <ArrowUpTrayIcon className="w-4 h-4" /> استيراد
+                <ArrowDownTrayIcon className="w-4 h-4" /> استيراد
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onClick={handleExport}>
-                <ArrowDownTrayIcon className="w-4 h-4" /> تصدير
+                <ArrowUpTrayIcon className="w-4 h-4" /> تصدير
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer">
