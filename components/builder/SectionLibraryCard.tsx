@@ -2,20 +2,19 @@
 
 import { useBuilderStore } from "@/store/builder-store";
 import { SectionRegistryItem } from "@/lib/section-registry";
-import { cn } from "@/lib/cn";
 
-interface DraggableSectionCardProps {
+interface SectionLibraryCardProps {
   section: SectionRegistryItem;
 }
 
-export function DraggableSectionCard({ section }: DraggableSectionCardProps) {
-  const addBlock = useBuilderStore((state) => state?.addBlock);
+export function SectionLibraryCard({ section }: SectionLibraryCardProps) {
+  const addBlock = useBuilderStore((s) => s.addBlock);
 
   const handleClick = () => {
     addBlock({
-      id: crypto.randomUUID(),
+      id: `${section.id}-${Date.now()}`,
       type: section.id,
-      data: section.defaultData,
+      data: { ...section.defaultData },
     });
   };
 
@@ -24,10 +23,10 @@ export function DraggableSectionCard({ section }: DraggableSectionCardProps) {
   return (
     <button
       type="button"
+      draggable={false}
       onClick={handleClick}
-      className={cn(
-        "flex items-center gap-3 p-3 w-full bg-white border border-border-color rounded-md cursor-pointer hover:border-accent hover:shadow-sm transition-all text-right"
-      )}
+      aria-label={`إضافة قسم ${section.name}`}
+      className="flex items-center gap-3 p-3 w-full bg-white border border-border-color rounded-md cursor-pointer hover:border-accent hover:shadow-sm transition-all text-right select-none"
     >
       <div className="flex items-center justify-center w-8 h-8 rounded bg-gray-50 text-muted-foreground shrink-0">
         <Icon className="w-4 h-4" />

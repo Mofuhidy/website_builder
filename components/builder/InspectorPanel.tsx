@@ -2,7 +2,7 @@
 
 import { useBuilderStore } from "@/store/builder-store";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
-import { DraggableSectionCard } from "./DraggableSectionCard";
+import { SectionLibraryCard } from "./SectionLibraryCard";
 import {
   Accordion,
   AccordionContent,
@@ -45,7 +45,7 @@ export function InspectorPanel() {
               <AccordionContent>
                 <div className="flex flex-col gap-2 pt-1 pb-3">
                   {category.items.map((section) => (
-                    <DraggableSectionCard key={section.id} section={section} />
+                    <SectionLibraryCard key={section.id} section={section} />
                   ))}
                 </div>
               </AccordionContent>

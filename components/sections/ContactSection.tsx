@@ -2,7 +2,7 @@
 
 import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
-import { EnvelopeIcon, PhoneIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
 
 const cairo = Cairo({ subsets: ["arabic"] });
 
