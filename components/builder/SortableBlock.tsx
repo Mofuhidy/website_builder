@@ -14,11 +14,17 @@ interface SortableBlockProps {
   totalBlocks: number;
 }
 
-export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps) {
-  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
-  const selectBlock = useBuilderStore((s) => s.selectBlock);
+export function SortableBlock({
+  block,
+  index,
+  totalBlocks,
+}: SortableBlockProps) {
+  const selectedBlockId = useBuilderStore(s => s.selectedBlockId);
+  const selectBlock = useBuilderStore(s => s.selectBlock);
+  const lastAddedBlockId = useBuilderStore(s => s.lastAddedBlockId);
 
   const isSelected = selectedBlockId === block.id;
+  const isNew = lastAddedBlockId === block.id;
   const blockRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -38,18 +44,26 @@ export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps)
     transition,
   };
 
+  // Only scroll + animate for blocks that were just added — not on initial load
   useEffect(() => {
+    if (!isNew) return;
     const el = blockRef.current;
     if (!el) return;
+
     el.scrollIntoView({ behavior: "smooth", block: "nearest" });
     el.animate(
       [
-        { opacity: 0, transform: "translateY(12px) scale(0.99)" },
+        { opacity: 0, transform: "translateY(14px) scale(0.98)" },
         { opacity: 1, transform: "translateY(0) scale(1)" },
       ],
-      { duration: 350, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" },
+      {
+        duration: 380,
+        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+        fill: "backwards",
+      },
     );
-  }, []);
+    useBuilderStore.getState().clearLastAdded();
+  }, [isNew]);
 
   const setRefs = (el: HTMLDivElement | null) => {
     (blockRef as React.RefObject<HTMLDivElement | null>).current = el;
@@ -74,8 +88,7 @@ export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps)
         isSelected
           ? "ring-2 ring-accent ring-offset-2 shadow-xl shadow-accent/10 z-10"
           : "ring-1 ring-transparent hover:ring-gray-200 hover:shadow-md",
-      )}
-    >
+      )}>
       {isSelected && (
         <FloatingSectionToolbar
           blockId={block.id}
