@@ -26,14 +26,17 @@ import { useBuilderStore } from "@/store/builder-store";
 import { Button } from "@/components/ui/button";
 
 export function TopToolbar() {
-  const setDeviceMode = useBuilderStore((state) => state.setDeviceMode);
-  const blocks = useBuilderStore((state) => state.blocks);
-  const setBlocks = useBuilderStore((state) => state.setBlocks);
+  const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
+  const blocks = useBuilderStore(state => state.blocks);
+  const setBlocks = useBuilderStore(state => state.setBlocks);
+  const isDirty = useBuilderStore(state => state.isDirty);
+  const markSaved = useBuilderStore(state => state.markSaved);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
     const dataStr = JSON.stringify(blocks, null, 2);
-    const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
     const exportFileDefaultName = "website-design.json";
 
     const linkElement = document.createElement("a");
@@ -50,7 +53,7 @@ export function TopToolbar() {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         try {
           const content = e.target?.result as string;
           const importedBlocks = JSON.parse(content);
@@ -70,7 +73,9 @@ export function TopToolbar() {
     <header className="h-14 border-b border-border-color bg-white flex items-center justify-between px-4 shrink-0">
       {/* Right side (starts visually on the right in RTL) */}
       <div className="flex items-center gap-4">
-        <button className="text-muted-foreground hover:text-foreground transition-colors" aria-label="العودة">
+        <button
+          className="text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="العودة">
           <ArrowRightIcon className="w-5 h-5" />
         </button>
         <div className="font-semibold text-lg flex items-center gap-2">
@@ -96,33 +101,37 @@ export function TopToolbar() {
 
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تراجع">
+          <button
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="تراجع">
             <ArrowUturnLeftIcon className="w-4 h-4" />
           </button>
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="إعادة">
+          <button
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="إعادة">
             <ArrowUturnRightIcon className="w-4 h-4" />
           </button>
         </div>
 
-        <button 
+        <button
           onClick={handleImportClick}
-          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors" 
+          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="استيراد"
-          title="استيراد JSON"
-        >
+          title="استيراد JSON">
           <ArrowUpTrayIcon className="w-4 h-4" />
         </button>
 
-        <button 
+        <button
           onClick={handleExport}
-          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors" 
+          className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="تصدير"
-          title="تصدير JSON"
-        >
+          title="تصدير JSON">
           <ArrowDownTrayIcon className="w-4 h-4" />
         </button>
 
-        <button className="hidden sm:block p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="تغيير اللغة">
+        <button
+          className="hidden sm:block p-2 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="تغيير اللغة">
           <GlobeAltIcon className="w-4 h-4" />
         </button>
 
@@ -135,15 +144,24 @@ export function TopToolbar() {
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger
-              render={<Button variant="outline" size="icon" className="w-9 h-9 border-border-color" />}
-            >
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="w-9 h-9 border-border-color"
+                />
+              }>
               <Bars3Icon className="w-4 h-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent dir="rtl" align="end">
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={handleImportClick}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={handleImportClick}>
                 <ArrowUpTrayIcon className="w-4 h-4" /> استيراد
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={handleExport}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={handleExport}>
                 <ArrowDownTrayIcon className="w-4 h-4" /> تصدير
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -154,10 +172,14 @@ export function TopToolbar() {
                 <ArrowUturnRightIcon className="w-4 h-4" /> إعادة
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setDeviceMode("desktop")}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => setDeviceMode("desktop")}>
                 <ComputerDesktopIcon className="w-4 h-4" /> معاينة ككمبيوتر
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setDeviceMode("mobile")}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => setDeviceMode("mobile")}>
                 <DevicePhoneMobileIcon className="w-4 h-4" /> معاينة كجوال
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -171,10 +193,13 @@ export function TopToolbar() {
           </DropdownMenu>
         </div>
 
-        <button 
-          onClick={handleExport}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm"
-        >
+        <button
+          type="button"
+          onClick={markSaved}
+          className={`relative flex items-center gap-2 px-3 py-1.5 text-sm rounded  hover:bg-accent-hover transition-colors shadow-sm ${isDirty ? "bg-transparent text-accent border border-accent hover:text-white" : "text-white bg-accent"}`}>
+          {isDirty && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full animate-pulse" />
+          )}
           <DocumentCheckIcon className="w-4 h-4" />
           <span className="hidden sm:inline">حفظ التغييرات</span>
         </button>

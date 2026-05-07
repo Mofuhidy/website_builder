@@ -5,6 +5,7 @@ import {
   DocumentDuplicateIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useBuilderStore } from "@/store/builder-store";
 
@@ -23,32 +24,54 @@ export function FloatingSectionToolbar({
   const duplicateBlock = useBuilderStore((s) => s.duplicateBlock);
   const moveBlockUp = useBuilderStore((s) => s.moveBlockUp);
   const moveBlockDown = useBuilderStore((s) => s.moveBlockDown);
+  const setActiveTab = useBuilderStore((s) => s.setActiveTab);
+  const selectBlock = useBuilderStore((s) => s.selectBlock);
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    removeBlock(blockId);
-  };
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
 
-  const handleDuplicate = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    duplicateBlock(blockId);
+  const handleEdit = (e: React.MouseEvent) => {
+    stop(e);
+    selectBlock(blockId);
+    setActiveTab("sections");
   };
 
   const handleMoveUp = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    stop(e);
     moveBlockUp(blockId);
   };
 
   const handleMoveDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    stop(e);
     moveBlockDown(blockId);
+  };
+
+  const handleDuplicate = (e: React.MouseEvent) => {
+    stop(e);
+    duplicateBlock(blockId);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    stop(e);
+    removeBlock(blockId);
   };
 
   return (
     <div
       className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 bg-white border border-gray-200 rounded-xl shadow-lg px-2 py-1.5"
-      onClick={(e) => e.stopPropagation()}
+      onClick={stop}
     >
+      <button
+        type="button"
+        onClick={handleEdit}
+        aria-label="تعديل القسم"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent-hover transition-colors"
+      >
+        <PencilSquareIcon className="w-3.5 h-3.5" />
+        تعديل
+      </button>
+
+      <div className="w-px h-5 bg-gray-200 mx-0.5" />
+
       <button
         type="button"
         onClick={handleMoveUp}
