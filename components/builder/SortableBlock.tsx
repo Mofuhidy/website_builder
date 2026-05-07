@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BuilderBlock, useBuilderStore } from "@/store/builder-store";
@@ -18,6 +19,7 @@ export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps)
   const selectBlock = useBuilderStore((s) => s.selectBlock);
 
   const isSelected = selectedBlockId === block.id;
+  const blockRef = useRef<HTMLDivElement>(null);
 
   const {
     attributes,
@@ -36,6 +38,24 @@ export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps)
     transition,
   };
 
+  useEffect(() => {
+    const el = blockRef.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    el.animate(
+      [
+        { opacity: 0, transform: "translateY(12px) scale(0.99)" },
+        { opacity: 1, transform: "translateY(0) scale(1)" },
+      ],
+      { duration: 350, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" },
+    );
+  }, []);
+
+  const setRefs = (el: HTMLDivElement | null) => {
+    (blockRef as React.RefObject<HTMLDivElement | null>).current = el;
+    setNodeRef(el);
+  };
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     selectBlock(block.id);
@@ -43,17 +63,17 @@ export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps)
 
   return (
     <div
-      ref={setNodeRef}
+      ref={setRefs}
       style={style}
       {...attributes}
       {...listeners}
       onClick={handleClick}
       className={cn(
-        "relative rounded-lg overflow-visible cursor-grab active:cursor-grabbing transition-all duration-150",
-        isDragging && "opacity-50 z-50 shadow-2xl",
+        "relative overflow-visible cursor-grab active:cursor-grabbing transition-all duration-200",
+        isDragging && "opacity-50 z-50 shadow-2xl scale-[1.01]",
         isSelected
-          ? "ring-2 ring-accent shadow-lg shadow-accent/10"
-          : "ring-1 ring-transparent hover:ring-gray-200",
+          ? "ring-2 ring-accent ring-offset-2 shadow-xl shadow-accent/10 z-10"
+          : "ring-1 ring-transparent hover:ring-gray-200 hover:shadow-md",
       )}
     >
       {isSelected && (
