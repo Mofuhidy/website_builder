@@ -1,13 +1,10 @@
 import {
   WindowIcon,
   StarIcon,
-  DocumentTextIcon,
   PhotoIcon,
   LinkIcon,
-  ShoppingBagIcon,
   ChatBubbleLeftRightIcon,
   PhoneIcon,
-  ChartBarIcon,
   QuestionMarkCircleIcon,
   Squares2X2Icon,
   MegaphoneIcon,

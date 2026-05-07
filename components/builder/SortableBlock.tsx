@@ -4,16 +4,21 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BuilderBlock, useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-
 import { SectionRenderer } from "../sections/SectionRenderer";
+import { FloatingSectionToolbar } from "./FloatingSectionToolbar";
 
 interface SortableBlockProps {
   block: BuilderBlock;
+  index: number;
+  totalBlocks: number;
 }
 
-export function SortableBlock({ block }: SortableBlockProps) {
-  const removeBlock = useBuilderStore((state) => state.removeBlock);
+export function SortableBlock({ block, index, totalBlocks }: SortableBlockProps) {
+  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const selectBlock = useBuilderStore((s) => s.selectBlock);
+
+  const isSelected = selectedBlockId === block.id;
+
   const {
     attributes,
     listeners,
@@ -23,10 +28,7 @@ export function SortableBlock({ block }: SortableBlockProps) {
     isDragging,
   } = useSortable({
     id: block.id,
-    data: {
-      type: "canvas-block",
-      block,
-    },
+    data: { type: "canvas-block", block },
   });
 
   const style = {
@@ -34,9 +36,9 @@ export function SortableBlock({ block }: SortableBlockProps) {
     transition,
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    removeBlock(block.id);
+    selectBlock(block.id);
   };
 
   return (
@@ -45,21 +47,24 @@ export function SortableBlock({ block }: SortableBlockProps) {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={handleClick}
       className={cn(
-        "relative group cursor-grab active:cursor-grabbing rounded-lg overflow-hidden transition-all",
-        isDragging ? "opacity-50 z-50 shadow-2xl ring-2 ring-accent" : "hover:ring-1 hover:ring-gray-200",
+        "relative rounded-lg overflow-visible cursor-grab active:cursor-grabbing transition-all duration-150",
+        isDragging && "opacity-50 z-50 shadow-2xl",
+        isSelected
+          ? "ring-2 ring-accent shadow-lg shadow-accent/10"
+          : "ring-1 ring-transparent hover:ring-gray-200",
       )}
     >
-      <SectionRenderer block={block} />
+      {isSelected && (
+        <FloatingSectionToolbar
+          blockId={block.id}
+          isFirst={index === 0}
+          isLast={index === totalBlocks - 1}
+        />
+      )}
 
-      {/* Delete Button */}
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur shadow-sm rounded-full text-gray-400 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity z-20 border border-gray-100"
-      >
-        <XMarkIcon className="w-5 h-5" />
-      </button>
+      <SectionRenderer block={block} />
     </div>
   );
 }
