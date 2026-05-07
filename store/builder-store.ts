@@ -69,7 +69,7 @@ export const useBuilderStore = create<BuilderState>()(
           const clone: BuilderBlock = {
             ...original,
             id: `${original.type}-${Date.now()}`,
-            data: { ...original.data },
+            data: structuredClone(original.data),
           };
           const newBlocks = [...state.blocks];
           newBlocks.splice(idx + 1, 0, clone);

@@ -150,11 +150,11 @@ function ListField({
 }
 
 export function PropertiesForm() {
-  const blocks = useBuilderStore((s) => s.blocks);
-  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const block = useBuilderStore((s) =>
+    s.selectedBlockId ? s.blocks.find((b) => b.id === s.selectedBlockId) ?? null : null
+  );
   const updateBlockData = useBuilderStore((s) => s.updateBlockData);
 
-  const block = blocks.find((b) => b.id === selectedBlockId);
   if (!block) return null;
 
   const registryItem = findRegistryItem(block.type);

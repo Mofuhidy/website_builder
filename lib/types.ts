@@ -1,10 +1,4 @@
-import { SectionType, JsonValue } from "./section-registry";
-
-export interface BuilderBlock {
-  id: string;
-  type: SectionType;
-  data: Record<string, JsonValue>;
-}
+import { JsonValue } from "./section-registry";
 
 export interface SectionComponentProps {
   data: Record<string, JsonValue>;
