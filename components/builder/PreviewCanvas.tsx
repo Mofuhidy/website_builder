@@ -23,6 +23,7 @@ export function PreviewCanvas() {
   const moveBlock = useBuilderStore((s) => s.moveBlock);
   const selectBlock = useBuilderStore((s) => s.selectBlock);
   const themeColors = useBuilderStore((s) => s.themeColors);
+  const customCss = useBuilderStore((s) => s.customCss);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -83,6 +84,7 @@ export function PreviewCanvas() {
             } as React.CSSProperties
           }
         >
+          {customCss && <style>{customCss}</style>}
           {blocks.length === 0 ? (
             <div className="text-center p-8 pointer-events-none">
               <p className="text-muted-foreground">اضغط على قسم من المكتبة لإضافته</p>

@@ -18,6 +18,12 @@ export interface ThemeColors {
   muted: string;
 }
 
+export interface Snapshot {
+  blocks: BuilderBlock[];
+  themeColors: ThemeColors;
+  customCss: string;
+}
+
 interface BuilderState {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
@@ -41,11 +47,34 @@ interface BuilderState {
   updateBlockData: (id: string, data: Record<string, JsonValue>) => void;
   themeColors: ThemeColors;
   setThemeColor: (key: keyof ThemeColors, value: string) => void;
+  customCss: string;
+  setCustomCss: (css: string) => void;
+
+  past: Snapshot[];
+  future: Snapshot[];
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+}
+
+// Helper to push history state before changes
+function pushSnapshot(state: BuilderState): Partial<BuilderState> {
+  const snapshot: Snapshot = {
+    blocks: state.blocks,
+    themeColors: state.themeColors,
+    customCss: state.customCss,
+  };
+  return {
+    past: [...state.past, snapshot],
+    future: [],
+    isDirty: true,
+  };
 }
 
 export const useBuilderStore = create<BuilderState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       activeTab: "sections",
       setActiveTab: (tab) => set({ activeTab: tab }),
       deviceMode: "desktop",
@@ -57,7 +86,64 @@ export const useBuilderStore = create<BuilderState>()(
       clearLastAdded: () => set({ lastAddedBlockId: null }),
       selectedBlockId: null,
       selectBlock: (id) => set({ selectedBlockId: id }),
-      
+      customCss: "",
+      setCustomCss: (css) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          customCss: css,
+        })),
+
+      past: [],
+      future: [],
+      canUndo: () => {
+        const { past } = get();
+        return past && past.length > 0;
+      },
+      canRedo: () => {
+        const { future } = get();
+        return future && future.length > 0;
+      },
+
+      undo: () =>
+        set((state) => {
+          if (state.past.length === 0) return state;
+          const previous = state.past[state.past.length - 1];
+          const newPast = state.past.slice(0, state.past.length - 1);
+          const currentSnapshot: Snapshot = {
+            blocks: state.blocks,
+            themeColors: state.themeColors,
+            customCss: state.customCss,
+          };
+          return {
+            past: newPast,
+            future: [currentSnapshot, ...state.future],
+            blocks: previous.blocks,
+            themeColors: previous.themeColors,
+            customCss: previous.customCss,
+            isDirty: true,
+          };
+        }),
+
+      redo: () =>
+        set((state) => {
+          if (state.future.length === 0) return state;
+          const next = state.future[0];
+          const newFuture = state.future.slice(1);
+          const currentSnapshot: Snapshot = {
+            blocks: state.blocks,
+            themeColors: state.themeColors,
+            customCss: state.customCss,
+          };
+          return {
+            past: [...state.past, currentSnapshot],
+            future: newFuture,
+            blocks: next.blocks,
+            themeColors: next.themeColors,
+            customCss: next.customCss,
+            isDirty: true,
+          };
+        }),
+
       themeColors: {
         accent: "#f05151",
         background: "#ffffff",
@@ -66,20 +152,20 @@ export const useBuilderStore = create<BuilderState>()(
       },
       setThemeColor: (key, value) =>
         set((state) => ({
+          ...pushSnapshot(state),
           themeColors: { ...state.themeColors, [key]: value },
-          isDirty: true,
         })),
 
       addBlock: (block) =>
-        set((state) => ({ blocks: [...state.blocks, block], isDirty: true, lastAddedBlockId: block.id })),
+        set((state) => ({ ...pushSnapshot(state), blocks: [...state.blocks, block], lastAddedBlockId: block.id })),
 
-      setBlocks: (blocks) => set({ blocks, isDirty: true }),
+      setBlocks: (blocks) => set((state) => ({ ...pushSnapshot(state), blocks })),
 
       insertBlock: (block, index) =>
         set((state) => {
           const newBlocks = [...state.blocks];
           newBlocks.splice(index, 0, block);
-          return { blocks: newBlocks, isDirty: true, lastAddedBlockId: block.id };
+          return { ...pushSnapshot(state), blocks: newBlocks, lastAddedBlockId: block.id };
         }),
 
       duplicateBlock: (id) =>
@@ -94,7 +180,7 @@ export const useBuilderStore = create<BuilderState>()(
           };
           const newBlocks = [...state.blocks];
           newBlocks.splice(idx + 1, 0, clone);
-          return { blocks: newBlocks, isDirty: true, lastAddedBlockId: clone.id };
+          return { ...pushSnapshot(state), blocks: newBlocks, lastAddedBlockId: clone.id };
         }),
 
       moveBlock: (oldIndex, newIndex) =>
@@ -102,7 +188,7 @@ export const useBuilderStore = create<BuilderState>()(
           const newBlocks = [...state.blocks];
           const [movedBlock] = newBlocks.splice(oldIndex, 1);
           newBlocks.splice(newIndex, 0, movedBlock);
-          return { blocks: newBlocks, isDirty: true };
+          return { ...pushSnapshot(state), blocks: newBlocks };
         }),
 
       moveBlockUp: (id) =>
@@ -111,7 +197,7 @@ export const useBuilderStore = create<BuilderState>()(
           if (idx <= 0) return state;
           const newBlocks = [...state.blocks];
           [newBlocks[idx - 1], newBlocks[idx]] = [newBlocks[idx], newBlocks[idx - 1]];
-          return { blocks: newBlocks, isDirty: true };
+          return { ...pushSnapshot(state), blocks: newBlocks };
         }),
 
       moveBlockDown: (id) =>
@@ -120,20 +206,20 @@ export const useBuilderStore = create<BuilderState>()(
           if (idx === -1 || idx >= state.blocks.length - 1) return state;
           const newBlocks = [...state.blocks];
           [newBlocks[idx], newBlocks[idx + 1]] = [newBlocks[idx + 1], newBlocks[idx]];
-          return { blocks: newBlocks, isDirty: true };
+          return { ...pushSnapshot(state), blocks: newBlocks };
         }),
 
       removeBlock: (id) =>
         set((state) => ({
+          ...pushSnapshot(state),
           blocks: state.blocks.filter((block) => block.id !== id),
           selectedBlockId: state.selectedBlockId === id ? null : state.selectedBlockId,
-          isDirty: true,
         })),
 
       updateBlockData: (id, data) =>
         set((state) => ({
+          ...pushSnapshot(state),
           blocks: state.blocks.map((b) => (b.id === id ? { ...b, data } : b)),
-          isDirty: true,
         })),
     }),
     {
@@ -144,6 +230,7 @@ export const useBuilderStore = create<BuilderState>()(
         deviceMode: state.deviceMode,
         activeTab: state.activeTab,
         themeColors: state.themeColors,
+        customCss: state.customCss,
       }),
     },
   ),
