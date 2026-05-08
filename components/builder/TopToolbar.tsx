@@ -52,6 +52,8 @@ export function TopToolbar() {
   const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
   const blocks = useBuilderStore(state => state.blocks);
   const setBlocks = useBuilderStore(state => state.setBlocks);
+  const selectBlock = useBuilderStore(state => state.selectBlock);
+  const setEditingBlock = useBuilderStore(state => state.setEditingBlock);
   const themeColors = useBuilderStore(state => state.themeColors);
   const setThemeColors = useBuilderStore(state => state.setThemeColors);
   const customCss = useBuilderStore(state => state.customCss);
@@ -140,11 +142,15 @@ export function TopToolbar() {
         };
 
         if (isValidLegacy) {
+          selectBlock(null);
+          setEditingBlock(null);
           setBlocks(parsed);
           setThemeColors(defaultColors);
           setCustomCss("");
           toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
         } else if (isV1) {
+          selectBlock(null);
+          setEditingBlock(null);
           setBlocks(parsed.blocks);
           if (parsed.themeColors) {
             setThemeColors({ ...defaultColors, ...parsed.themeColors });
