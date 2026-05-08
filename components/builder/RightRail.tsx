@@ -23,7 +23,7 @@ export function RightRail() {
   const setActiveTab = useBuilderStore((state) => state.setActiveTab);
 
   return (
-    <div className="w-20 flex flex-col items-center py-4 gap-4 bg-white shrink-0 border-l border-border-color">
+    <div className="w-full h-[72px] md:w-20 md:h-auto flex flex-row md:flex-col items-center justify-around md:justify-start md:py-4 gap-2 md:gap-4 bg-white shrink-0 border-t md:border-t-0 md:border-l border-border-color overflow-x-auto">
       {TABS.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -32,7 +32,7 @@ export function RightRail() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "flex flex-col items-center justify-center gap-1 w-16 h-16 rounded-xl transition-colors",
+              "flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] md:w-16 md:h-16 rounded-xl transition-colors shrink-0",
               isActive
                 ? "bg-accent/10 text-accent"
                 : "text-muted-foreground hover:bg-gray-50 hover:text-foreground"

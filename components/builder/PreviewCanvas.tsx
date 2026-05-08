@@ -68,7 +68,7 @@ export function PreviewCanvas() {
       >
         <div
           className={cn(
-            "bg-background text-foreground min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",
+            "@container bg-background text-foreground min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",
             deviceMode === "desktop" && "w-full max-w-5xl",
             deviceMode === "tablet" && "w-full max-w-[768px]",
             deviceMode === "mobile" && "w-full max-w-[375px]",

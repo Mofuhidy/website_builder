@@ -11,7 +11,7 @@ export function BuilderShell() {
       <TopToolbar />
 
       <main className="flex flex-col-reverse md:flex-row flex-1 overflow-hidden">
-        <aside className="w-full md:w-80 h-[40vh] md:h-auto bg-white border-t md:border-t-0 md:border-l border-border-color flex shrink-0">
+        <aside className="w-full md:w-80 h-[50vh] md:h-auto bg-white border-t md:border-t-0 md:border-l border-border-color flex flex-col-reverse md:flex-row shrink-0">
           <RightRail />
           <InspectorPanel />
         </aside>

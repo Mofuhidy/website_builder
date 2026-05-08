@@ -33,7 +33,7 @@ export const FeaturesSection = memo(function FeaturesSection({ data }: FeaturesS
     <section className={`py-20 px-6 bg-muted ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{title}</h2>
+          <h2 className="text-3xl @md:text-4xl font-bold text-foreground mb-4">{title}</h2>
           <div className="w-20 h-1.5 bg-accent mx-auto rounded-full" />
         </div>
 

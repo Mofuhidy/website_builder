@@ -17,7 +17,7 @@ export const FooterSection = memo(function FooterSection({ data }: FooterSection
 
   return (
     <footer className={`py-12 px-6 bg-foreground text-background ${cairo.className}`} dir="rtl">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <div className="max-w-6xl mx-auto flex flex-col @md:flex-row justify-between items-center gap-8">
         <div>
           <h3 className="text-2xl font-black mb-1">{logo}</h3>
           <p className="text-background/70 text-sm">{tagline}</p>

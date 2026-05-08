@@ -53,7 +53,7 @@ export function TopToolbar() {
   const blocks = useBuilderStore(state => state.blocks);
   const setBlocks = useBuilderStore(state => state.setBlocks);
   const themeColors = useBuilderStore(state => state.themeColors);
-  const setThemeColor = useBuilderStore(state => state.setThemeColor);
+  const setThemeColors = useBuilderStore(state => state.setThemeColors);
   const customCss = useBuilderStore(state => state.customCss);
   const setCustomCss = useBuilderStore(state => state.setCustomCss);
   const undo = useBuilderStore(state => state.undo);
@@ -132,18 +132,29 @@ export function TopToolbar() {
           isV1 = true;
         }
 
+        const defaultColors = {
+          accent: "#f05151",
+          background: "#ffffff",
+          foreground: "#111827",
+          muted: "#f9fafb",
+        };
+
         if (isValidLegacy) {
           setBlocks(parsed);
+          setThemeColors(defaultColors);
+          setCustomCss("");
           toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
         } else if (isV1) {
           setBlocks(parsed.blocks);
           if (parsed.themeColors) {
-            Object.keys(parsed.themeColors).forEach((key) => {
-              setThemeColor(key as keyof typeof themeColors, parsed.themeColors[key]);
-            });
+            setThemeColors({ ...defaultColors, ...parsed.themeColors });
+          } else {
+            setThemeColors(defaultColors);
           }
           if (typeof parsed.customCss === "string") {
             setCustomCss(parsed.customCss);
+          } else {
+            setCustomCss("");
           }
           toast.success("تم استيراد التصميم بنجاح.");
         } else {

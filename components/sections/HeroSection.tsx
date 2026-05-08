@@ -22,7 +22,7 @@ export const HeroSection = memo(function HeroSection({ data }: HeroSectionProps)
       dir="rtl"
     >
       <div className="max-w-6xl mx-auto text-center relative z-10">
-        <h1 className="text-5xl md:text-6xl font-black text-foreground mb-6 leading-tight">
+        <h1 className="text-5xl @md:text-6xl font-black text-foreground mb-6 leading-tight">
           {title}
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">

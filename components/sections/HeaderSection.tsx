@@ -32,7 +32,7 @@ export const HeaderSection = memo(function HeaderSection({ data }: HeaderSection
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <div className="text-2xl font-black text-accent">{logo}</div>
 
-        <nav className="hidden md:flex gap-8 items-center">
+        <nav className="hidden @md:flex gap-8 items-center">
           {links.map((link, i) => (
             <a
               key={i}

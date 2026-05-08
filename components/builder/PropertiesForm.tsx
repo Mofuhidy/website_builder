@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PlusIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { motion, AnimatePresence } from "framer-motion";
 import { useBuilderStore } from "@/store/builder-store";
 import { CATEGORY_REGISTRY, EditableField, JsonValue, ListItemField } from "@/lib/section-registry";
 
@@ -80,62 +81,80 @@ function ListField({
 
   return (
     <div className="flex flex-col gap-2">
-      {items.map((item, index) => {
-        const isOpen = openIndex === index;
-        const previewLabel = field.listFields?.[0]
-          ? ((item[field.listFields[0].key] as string) || `عنصر ${index + 1}`)
-          : `عنصر ${index + 1}`;
+      <AnimatePresence initial={false}>
+        {items.map((item, index) => {
+          const isOpen = openIndex === index;
+          const previewLabel = field.listFields?.[0]
+            ? ((item[field.listFields[0].key] as string) || `عنصر ${index + 1}`)
+            : `عنصر ${index + 1}`;
 
-        return (
-          <div key={`${blockId}-${field.key}-${index}`} className="border border-border-color rounded-xl overflow-hidden">
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setOpenIndex(isOpen ? null : index)}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpenIndex(isOpen ? null : index)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 cursor-pointer select-none"
+          return (
+            <motion.div
+              key={`${blockId}-${field.key}-${index}`}
+              initial={{ opacity: 0, height: 0, overflow: "hidden" }}
+              animate={{ opacity: 1, height: "auto", overflow: "visible" }}
+              exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+              transition={{ duration: 0.2 }}
+              className="border border-border-color rounded-xl bg-white"
             >
-              <span className="truncate flex-1 text-right">{previewLabel}</span>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  aria-label="حذف العنصر"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemove(index);
-                  }}
-                  className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <TrashIcon className="w-3.5 h-3.5" />
-                </button>
-                {isOpen ? (
-                  <ChevronUpIcon className="w-4 h-4 text-gray-400" />
-                ) : (
-                  <ChevronDownIcon className="w-4 h-4 text-gray-400" />
-                )}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpenIndex(isOpen ? null : index)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 cursor-pointer select-none rounded-xl"
+              >
+                <span className="truncate flex-1 text-right">{previewLabel}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    aria-label="حذف العنصر"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(index);
+                    }}
+                    className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <TrashIcon className="w-3.5 h-3.5" />
+                  </button>
+                  {isOpen ? (
+                    <ChevronUpIcon className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronDownIcon className="w-4 h-4 text-gray-400" />
+                  )}
+                </div>
               </div>
-            </div>
 
-            {isOpen && (
-              <div className="p-4 flex flex-col gap-4 bg-white border-t border-border-color">
-                {(field.listFields ?? []).map((subField) => (
-                  <div key={subField.key} className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      {subField.label}
-                    </label>
-                    <ScalarInput
-                      field={subField}
-                      id={`${blockId}-${field.key}-${index}-${subField.key}`}
-                      value={(item[subField.key] as string) ?? ""}
-                      onChange={(v) => handleItemChange(index, subField.key, v)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden border-t border-border-color"
+                  >
+                    <div className="p-4 flex flex-col gap-4 bg-white">
+                      {(field.listFields ?? []).map((subField) => (
+                        <div key={subField.key} className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            {subField.label}
+                          </label>
+                          <ScalarInput
+                            field={subField}
+                            id={`${blockId}-${field.key}-${index}-${subField.key}`}
+                            value={(item[subField.key] as string) ?? ""}
+                            onChange={(v) => handleItemChange(index, subField.key, v)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
 
       <button
         type="button"
@@ -150,8 +169,9 @@ function ListField({
 }
 
 export function PropertiesForm() {
+  const editingBlockId = useBuilderStore((s) => s.editingBlockId);
   const block = useBuilderStore((s) =>
-    s.selectedBlockId ? s.blocks.find((b) => b.id === s.selectedBlockId) ?? null : null
+    editingBlockId ? s.blocks.find((b) => b.id === editingBlockId) ?? null : null
   );
   const updateBlockData = useBuilderStore((s) => s.updateBlockData);
 

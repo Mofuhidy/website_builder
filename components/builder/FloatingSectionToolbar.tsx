@@ -27,11 +27,14 @@ export function FloatingSectionToolbar({
   const setActiveTab = useBuilderStore((s) => s.setActiveTab);
   const selectBlock = useBuilderStore((s) => s.selectBlock);
 
+  const setEditingBlock = useBuilderStore((s) => s.setEditingBlock);
+
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   const handleEdit = (e: React.MouseEvent) => {
     stop(e);
     selectBlock(blockId);
+    setEditingBlock(blockId);
     setActiveTab("sections");
   };
 
@@ -57,7 +60,7 @@ export function FloatingSectionToolbar({
 
   return (
     <div
-      className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 bg-white border border-gray-200 rounded-xl shadow-lg px-2 py-1.5"
+      className="absolute top-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-white border border-gray-200 rounded-xl shadow-lg px-2 py-1.5"
       onClick={stop}
     >
       <button

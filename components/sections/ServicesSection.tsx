@@ -33,7 +33,7 @@ export const ServicesSection = memo(function ServicesSection({ data }: ServicesS
     <section className={`py-24 bg-background ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">{title}</h2>
+          <h2 className="text-3xl @md:text-4xl font-extrabold text-foreground mb-4">{title}</h2>
           <div className="w-16 h-1 bg-accent mx-auto rounded-full" />
         </div>
 

@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { motion, AnimatePresence } from "framer-motion";
 
 function findSectionName(type: string): string {
   for (const category of CATEGORY_REGISTRY) {
@@ -25,18 +26,20 @@ function findSectionName(type: string): string {
 
 export function InspectorPanel() {
   const activeTab = useBuilderStore((s) => s.activeTab);
+  const editingBlockId = useBuilderStore((s) => s.editingBlockId);
+  const setEditingBlock = useBuilderStore((s) => s.setEditingBlock);
+  
   const selectedBlock = useBuilderStore((s) =>
-    s.selectedBlockId ? s.blocks.find((b) => b.id === s.selectedBlockId) ?? null : null
+    editingBlockId ? s.blocks.find((b) => b.id === editingBlockId) ?? null : null
   );
-  const selectBlock = useBuilderStore((s) => s.selectBlock);
 
-  const isEditingSection = activeTab === "sections" && selectedBlock !== null;
+  const isEditingSection = activeTab === "sections" && editingBlockId !== null;
 
   let title = "";
   let content = null;
 
   if (isEditingSection) {
-    title = findSectionName(selectedBlock.type);
+    title = selectedBlock ? findSectionName(selectedBlock.type) : "تعديل القسم";
     content = <PropertiesForm />;
   } else {
     switch (activeTab) {
@@ -90,7 +93,7 @@ export function InspectorPanel() {
         {isEditingSection && (
           <button
             type="button"
-            onClick={() => selectBlock(null)}
+            onClick={() => setEditingBlock(null)}
             aria-label="العودة إلى مكتبة الأقسام"
             className="p-1.5 rounded-lg text-gray-400 hover:text-accent hover:bg-accent/5 transition-colors shrink-0"
           >
@@ -100,7 +103,20 @@ export function InspectorPanel() {
         <h2 className="font-semibold text-base truncate">{title}</h2>
       </div>
 
-      <div className="flex-1 p-4 overflow-auto">{content}</div>
+      <div className="flex-1 overflow-hidden relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isEditingSection ? "editing-" + selectedBlock?.id : activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-0 overflow-auto p-4"
+          >
+            {content}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

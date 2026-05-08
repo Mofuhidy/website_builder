@@ -36,6 +36,8 @@ interface BuilderState {
   clearLastAdded: () => void;
   selectedBlockId: string | null;
   selectBlock: (id: string | null) => void;
+  editingBlockId: string | null;
+  setEditingBlock: (id: string | null) => void;
   addBlock: (block: BuilderBlock) => void;
   insertBlock: (block: BuilderBlock, index: number) => void;
   duplicateBlock: (id: string) => void;
@@ -47,6 +49,7 @@ interface BuilderState {
   updateBlockData: (id: string, data: Record<string, JsonValue>) => void;
   themeColors: ThemeColors;
   setThemeColor: (key: keyof ThemeColors, value: string) => void;
+  setThemeColors: (colors: ThemeColors) => void;
   customCss: string;
   setCustomCss: (css: string) => void;
 
@@ -86,6 +89,8 @@ export const useBuilderStore = create<BuilderState>()(
       clearLastAdded: () => set({ lastAddedBlockId: null }),
       selectedBlockId: null,
       selectBlock: (id) => set({ selectedBlockId: id }),
+      editingBlockId: null,
+      setEditingBlock: (id) => set({ editingBlockId: id }),
       customCss: "",
       setCustomCss: (css) =>
         set((state) => ({
@@ -155,6 +160,11 @@ export const useBuilderStore = create<BuilderState>()(
           ...pushSnapshot(state),
           themeColors: { ...state.themeColors, [key]: value },
         })),
+      setThemeColors: (colors) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          themeColors: colors,
+        })),
 
       addBlock: (block) =>
         set((state) => ({ ...pushSnapshot(state), blocks: [...state.blocks, block], lastAddedBlockId: block.id })),
@@ -214,6 +224,7 @@ export const useBuilderStore = create<BuilderState>()(
           ...pushSnapshot(state),
           blocks: state.blocks.filter((block) => block.id !== id),
           selectedBlockId: state.selectedBlockId === id ? null : state.selectedBlockId,
+          editingBlockId: state.editingBlockId === id ? null : state.editingBlockId,
         })),
 
       updateBlockData: (id, data) =>
@@ -231,6 +242,7 @@ export const useBuilderStore = create<BuilderState>()(
         activeTab: state.activeTab,
         themeColors: state.themeColors,
         customCss: state.customCss,
+        editingBlockId: state.editingBlockId,
       }),
     },
   ),
