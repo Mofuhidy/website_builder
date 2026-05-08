@@ -11,6 +11,13 @@ export interface BuilderBlock {
   data: Record<string, JsonValue>;
 }
 
+export interface ThemeColors {
+  accent: string;
+  background: string;
+  foreground: string;
+  muted: string;
+}
+
 interface BuilderState {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
@@ -32,6 +39,8 @@ interface BuilderState {
   removeBlock: (id: string) => void;
   setBlocks: (blocks: BuilderBlock[]) => void;
   updateBlockData: (id: string, data: Record<string, JsonValue>) => void;
+  themeColors: ThemeColors;
+  setThemeColor: (key: keyof ThemeColors, value: string) => void;
 }
 
 export const useBuilderStore = create<BuilderState>()(
@@ -48,6 +57,18 @@ export const useBuilderStore = create<BuilderState>()(
       clearLastAdded: () => set({ lastAddedBlockId: null }),
       selectedBlockId: null,
       selectBlock: (id) => set({ selectedBlockId: id }),
+      
+      themeColors: {
+        accent: "#f05151",
+        background: "#ffffff",
+        foreground: "#111827",
+        muted: "#f9fafb",
+      },
+      setThemeColor: (key, value) =>
+        set((state) => ({
+          themeColors: { ...state.themeColors, [key]: value },
+          isDirty: true,
+        })),
 
       addBlock: (block) =>
         set((state) => ({ blocks: [...state.blocks, block], isDirty: true, lastAddedBlockId: block.id })),
@@ -122,6 +143,7 @@ export const useBuilderStore = create<BuilderState>()(
         blocks: state.blocks,
         deviceMode: state.deviceMode,
         activeTab: state.activeTab,
+        themeColors: state.themeColors,
       }),
     },
   ),

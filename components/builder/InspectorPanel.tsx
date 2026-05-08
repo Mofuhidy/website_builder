@@ -5,6 +5,7 @@ import { useBuilderStore } from "@/store/builder-store";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SectionLibraryCard } from "./SectionLibraryCard";
 import { PropertiesForm } from "./PropertiesForm";
+import { ColorsPanel } from "./ColorsPanel";
 import {
   Accordion,
   AccordionContent,
@@ -52,9 +53,7 @@ export function InspectorPanel() {
         break;
       case "colors":
         title = "الألوان";
-        content = (
-          <p className="text-sm text-muted-foreground">إعدادات الألوان...</p>
-        );
+        content = <ColorsPanel />;
         break;
       case "css":
         title = "CSS مخصص";

@@ -26,7 +26,7 @@ export const HeaderSection = memo(function HeaderSection({ data }: HeaderSection
 
   return (
     <header
-      className={`py-4 px-6 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 ${cairo.className}`}
+      className={`py-4 px-6 bg-background/80 backdrop-blur-md border-b border-border-color sticky top-0 z-40 ${cairo.className}`}
       dir="rtl"
     >
       <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -37,7 +37,7 @@ export const HeaderSection = memo(function HeaderSection({ data }: HeaderSection
             <a
               key={i}
               href={link.href}
-              className="text-gray-600 hover:text-accent transition-colors font-medium"
+              className="text-muted-foreground hover:text-accent transition-colors font-medium"
             >
               {link.label}
             </a>

@@ -50,7 +50,7 @@ export function SectionRenderer({ block }: SectionRendererProps) {
       return <ContactSection data={data} />;
     default:
       return (
-        <div className="p-16 border-2 border-dashed border-gray-200 rounded-3xl text-center text-gray-400 bg-gray-50/50">
+        <div className="p-16 border-2 border-dashed border-border-color rounded-3xl text-center text-muted-foreground bg-muted/50">
           <p className="text-lg font-bold">قريباً: مكون [{block.type}]</p>
           <p className="text-sm">هذا المكون تحت التطوير حالياً.</p>
         </div>

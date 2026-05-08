@@ -52,6 +52,8 @@ export function TopToolbar() {
   const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
   const blocks = useBuilderStore(state => state.blocks);
   const setBlocks = useBuilderStore(state => state.setBlocks);
+  const themeColors = useBuilderStore(state => state.themeColors);
+  const setThemeColor = useBuilderStore(state => state.setThemeColor);
   const isDirty = useBuilderStore(state => state.isDirty);
   const markSaved = useBuilderStore(state => state.markSaved);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -63,8 +65,9 @@ export function TopToolbar() {
 
   const handleExport = async () => {
     setIsExporting(true);
+    const exportData = { version: 1, themeColors, blocks };
     const [dataStr] = await Promise.all([
-      Promise.resolve(JSON.stringify(blocks, null, 2)),
+      Promise.resolve(JSON.stringify(exportData, null, 2)),
       new Promise(r => setTimeout(r, MIN_LOADING_MS)),
     ]);
     const dataUri =
@@ -97,6 +100,9 @@ export function TopToolbar() {
         const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
         if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
 
+        let isValidLegacy = false;
+        let isV1 = false;
+
         if (
           Array.isArray(parsed) &&
           parsed.every(
@@ -110,7 +116,27 @@ export function TopToolbar() {
               !Array.isArray(item.data)
           )
         ) {
+          isValidLegacy = true;
+        } else if (
+          parsed && 
+          typeof parsed === "object" && 
+          parsed.version === 1 && 
+          Array.isArray(parsed.blocks)
+        ) {
+          isV1 = true;
+        }
+
+        if (isValidLegacy) {
           setBlocks(parsed);
+          toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
+        } else if (isV1) {
+          setBlocks(parsed.blocks);
+          if (parsed.themeColors) {
+            Object.keys(parsed.themeColors).forEach((key) => {
+              setThemeColor(key as keyof typeof themeColors, parsed.themeColors[key]);
+            });
+          }
+          toast.success("تم استيراد التصميم بنجاح.");
         } else {
           toast.error("الملف لا يحتوي على تصميم صالح.");
         }

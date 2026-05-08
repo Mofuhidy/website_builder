@@ -29,13 +29,13 @@ export const CTASection = memo(function CTASection({ data }: CTASectionProps) {
           )}
           <button
             type="button"
-            className="px-10 py-5 bg-white text-accent font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+            className="px-10 py-5 bg-background text-accent font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
           >
             {buttonText}
           </button>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-background/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-foreground/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
       </div>
     </section>
   );

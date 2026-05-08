@@ -18,14 +18,14 @@ export const HeroSection = memo(function HeroSection({ data }: HeroSectionProps)
 
   return (
     <section
-      className={`relative py-20 px-6 overflow-hidden bg-white ${cairo.className}`}
+      className={`relative py-20 px-6 overflow-hidden bg-background ${cairo.className}`}
       dir="rtl"
     >
       <div className="max-w-6xl mx-auto text-center relative z-10">
-        <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
+        <h1 className="text-5xl md:text-6xl font-black text-foreground mb-6 leading-tight">
           {title}
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
           {subtitle}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
@@ -40,7 +40,7 @@ export const HeroSection = memo(function HeroSection({ data }: HeroSectionProps)
           {buttonSecondaryText && (
             <button
               type="button"
-              className="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-all"
+              className="px-8 py-4 bg-background text-foreground font-bold rounded-lg border border-border-color hover:bg-muted transition-all"
             >
               {buttonSecondaryText}
             </button>
