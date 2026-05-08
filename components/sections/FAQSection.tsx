@@ -16,24 +16,24 @@ export const FAQSection = memo(function FAQSection({ data }: FAQSectionProps) {
   const faqs = (data.faqs as { q: string; a: string }[]) || [];
 
   return (
-    <section className={`py-20 px-6 bg-white ${cairo.className}`} dir="rtl">
+    <section className={`py-20 px-6 bg-background ${cairo.className}`} dir="rtl">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{title}</h2>
           <div className="w-20 h-1.5 bg-accent mx-auto rounded-full" />
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, idx) => (
-            <div key={idx} className="border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div key={idx} className="border border-border-color rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <button
                 type="button"
-                className="w-full flex items-center justify-between p-6 text-right bg-white hover:bg-gray-50 transition-colors group"
+                className="w-full flex items-center justify-between p-6 text-right bg-background hover:bg-muted transition-colors group"
               >
-                <span className="font-bold text-gray-900">{faq.q}</span>
-                <ChevronDownIcon className="w-5 h-5 text-gray-400 group-hover:text-accent transition-colors" />
+                <span className="font-bold text-foreground">{faq.q}</span>
+                <ChevronDownIcon className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
               </button>
-              <div className="p-6 pt-0 text-gray-600 border-t border-gray-50 bg-gray-50/30">
+              <div className="p-6 pt-0 text-muted-foreground border-t border-border-color bg-muted/30">
                 {faq.a}
               </div>
             </div>

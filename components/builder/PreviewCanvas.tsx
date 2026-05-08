@@ -22,6 +22,7 @@ export function PreviewCanvas() {
   const blocks = useBuilderStore((s) => s.blocks);
   const moveBlock = useBuilderStore((s) => s.moveBlock);
   const selectBlock = useBuilderStore((s) => s.selectBlock);
+  const themeColors = useBuilderStore((s) => s.themeColors);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -66,13 +67,21 @@ export function PreviewCanvas() {
       >
         <div
           className={cn(
-            "bg-white min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",
+            "bg-background text-foreground min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",
             deviceMode === "desktop" && "w-full max-w-5xl",
             deviceMode === "tablet" && "w-full max-w-[768px]",
             deviceMode === "mobile" && "w-full max-w-[375px]",
             "border-border-color",
             blocks.length === 0 ? "items-center justify-center" : "",
           )}
+          style={
+            {
+              "--background": themeColors.background,
+              "--foreground": themeColors.foreground,
+              "--muted": themeColors.muted,
+              "--accent": themeColors.accent,
+            } as React.CSSProperties
+          }
         >
           {blocks.length === 0 ? (
             <div className="text-center p-8 pointer-events-none">

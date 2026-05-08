@@ -26,11 +26,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useBuilderStore } from "@/store/builder-store";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
+
+function Spinner() {
+  return (
+    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8z"
+      />
+    </svg>
+  );
+}
 
 export function TopToolbar() {
   const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
   const blocks = useBuilderStore(state => state.blocks);
   const setBlocks = useBuilderStore(state => state.setBlocks);
+  const themeColors = useBuilderStore(state => state.themeColors);
+  const setThemeColor = useBuilderStore(state => state.setThemeColor);
   const isDirty = useBuilderStore(state => state.isDirty);
   const markSaved = useBuilderStore(state => state.markSaved);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,8 +65,9 @@ export function TopToolbar() {
 
   const handleExport = async () => {
     setIsExporting(true);
+    const exportData = { version: 1, themeColors, blocks };
     const [dataStr] = await Promise.all([
-      Promise.resolve(JSON.stringify(blocks, null, 2)),
+      Promise.resolve(JSON.stringify(exportData, null, 2)),
       new Promise(r => setTimeout(r, MIN_LOADING_MS)),
     ]);
     const dataUri =
@@ -71,12 +95,48 @@ export function TopToolbar() {
     reader.onload = async e => {
       try {
         const content = e.target?.result as string;
-        const importedBlocks = JSON.parse(content);
+        const parsed = JSON.parse(content);
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
         if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
-        if (Array.isArray(importedBlocks)) {
-          setBlocks(importedBlocks);
+
+        let isValidLegacy = false;
+        let isV1 = false;
+
+        if (
+          Array.isArray(parsed) &&
+          parsed.every(
+            (item) =>
+              item !== null &&
+              typeof item === "object" &&
+              typeof item.id === "string" &&
+              typeof item.type === "string" &&
+              item.data !== null &&
+              typeof item.data === "object" &&
+              !Array.isArray(item.data)
+          )
+        ) {
+          isValidLegacy = true;
+        } else if (
+          parsed && 
+          typeof parsed === "object" && 
+          parsed.version === 1 && 
+          Array.isArray(parsed.blocks)
+        ) {
+          isV1 = true;
+        }
+
+        if (isValidLegacy) {
+          setBlocks(parsed);
+          toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
+        } else if (isV1) {
+          setBlocks(parsed.blocks);
+          if (parsed.themeColors) {
+            Object.keys(parsed.themeColors).forEach((key) => {
+              setThemeColor(key as keyof typeof themeColors, parsed.themeColors[key]);
+            });
+          }
+          toast.success("تم استيراد التصميم بنجاح.");
         } else {
           toast.error("الملف لا يحتوي على تصميم صالح.");
         }
@@ -141,56 +201,20 @@ export function TopToolbar() {
           className="hidden sm:flex items-center gap-1.5 p-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           aria-label="استيراد"
           title="استيراد JSON">
-          {isImporting ? (
-            <svg
-              className="w-4 h-4 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8z"
-              />
-            </svg>
-          ) : (
-            <ArrowDownTrayIcon className="w-4 h-4" />
-          )}
+          {isImporting ? <Spinner /> : <ArrowDownTrayIcon className="w-4 h-4" />}
         </button>
 
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className="hidden sm:flex items-center gap-1.5 p-2 transition-colors disabled:opacity-50"
+          className={cn(
+            "hidden sm:flex items-center gap-1.5 p-2 transition-colors disabled:opacity-50",
+            exportDone ? "text-green-500" : "text-muted-foreground hover:text-foreground"
+          )}
           aria-label="تصدير"
-          style={{ color: exportDone ? "#22c55e" : undefined }}
           title="تصدير JSON">
           {isExporting ? (
-            <svg
-              className="w-4 h-4 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8z"
-              />
-            </svg>
+            <Spinner />
           ) : exportDone ? (
             <CheckCircleIcon className="w-4 h-4" />
           ) : (
@@ -265,7 +289,12 @@ export function TopToolbar() {
         <button
           type="button"
           onClick={markSaved}
-          className={`relative flex items-center gap-2 px-3 py-1.5 text-sm rounded  hover:bg-accent-hover transition-colors shadow-sm ${isDirty ? "bg-transparent text-accent border border-accent hover:text-white" : "text-white bg-accent"}`}>
+          className={cn(
+            "relative flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-accent-hover transition-colors shadow-sm",
+            isDirty
+              ? "bg-transparent text-accent border border-accent hover:text-white"
+              : "text-white bg-accent"
+          )}>
           {isDirty && (
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full animate-pulse" />
           )}

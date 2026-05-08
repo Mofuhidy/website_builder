@@ -5,8 +5,8 @@ import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from "@h
 import { cn } from "@/lib/cn";
 
 export function DeviceToggle() {
-  const deviceMode = useBuilderStore((state) => state?.deviceMode);
-  const setDeviceMode = useBuilderStore((state) => state?.setDeviceMode);
+  const deviceMode = useBuilderStore((state) => state.deviceMode);
+  const setDeviceMode = useBuilderStore((state) => state.setDeviceMode);
 
   return (
     <div className="flex items-center gap-1 bg-background p-1 rounded-md border border-border-color">

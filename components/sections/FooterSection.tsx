@@ -16,20 +16,20 @@ export const FooterSection = memo(function FooterSection({ data }: FooterSection
   const copyright = (data.copyright as string) || "© 2026 جميع الحقوق محفوظة.";
 
   return (
-    <footer className={`py-12 px-6 bg-gray-900 text-white ${cairo.className}`} dir="rtl">
+    <footer className={`py-12 px-6 bg-foreground text-background ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div>
           <h3 className="text-2xl font-black mb-1">{logo}</h3>
-          <p className="text-gray-400 text-sm">{tagline}</p>
+          <p className="text-background/70 text-sm">{tagline}</p>
         </div>
 
-        <div className="flex gap-8 text-gray-400 text-sm">
+        <div className="flex gap-8 text-background/70 text-sm">
           <a href="#" rel="noreferrer" className="hover:text-accent transition-colors">الرئيسية</a>
           <a href="#" rel="noreferrer" className="hover:text-accent transition-colors">المميزات</a>
           <a href="#" rel="noreferrer" className="hover:text-accent transition-colors">اتصل بنا</a>
         </div>
 
-        <div className="text-gray-500 text-sm">{copyright}</div>
+        <div className="text-background/50 text-sm">{copyright}</div>
       </div>
     </footer>
   );

@@ -19,52 +19,52 @@ export const ContactSection = memo(function ContactSection({ data }: ContactSect
   const buttonText = (data.buttonText as string) || "إرسال الرسالة";
 
   return (
-    <section className={`py-24 bg-gray-50 ${cairo.className}`} dir="rtl">
+    <section className={`py-24 bg-muted ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-4xl font-black text-gray-900 mb-6">{title}</h2>
-            <p className="text-gray-600 mb-10 leading-relaxed">{subtitle}</p>
+            <h2 className="text-4xl font-black text-foreground mb-6">{title}</h2>
+            <p className="text-muted-foreground mb-10 leading-relaxed">{subtitle}</p>
 
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-accent">
+                <div className="w-12 h-12 bg-background rounded-xl shadow-sm flex items-center justify-center text-accent">
                   <EnvelopeIcon className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-400">البريد الإلكتروني</div>
-                  <div className="font-bold text-gray-900">{email}</div>
+                  <div className="font-bold text-foreground">{email}</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-accent">
+                <div className="w-12 h-12 bg-background rounded-xl shadow-sm flex items-center justify-center text-accent">
                   <PhoneIcon className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-400">رقم الهاتف</div>
-                  <div className="font-bold text-gray-900">{phone}</div>
+                  <div className="font-bold text-foreground">{phone}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-10 rounded-[2rem] shadow-xl shadow-gray-200/50">
+          <div className="bg-background p-10 rounded-[2rem] shadow-xl shadow-gray-200/50">
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
                 placeholder="الاسم الكامل"
-                className="w-full px-6 py-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-6 py-4 bg-muted border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all text-foreground"
               />
               <input
                 type="email"
                 placeholder="البريد الإلكتروني"
-                className="w-full px-6 py-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-6 py-4 bg-muted border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all text-foreground"
               />
               <textarea
                 placeholder="رسالتك"
                 rows={4}
-                className="w-full px-6 py-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full px-6 py-4 bg-muted border-none rounded-xl focus:ring-2 focus:ring-accent/20 transition-all text-foreground"
               />
               <button
                 type="button"

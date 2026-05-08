@@ -5,6 +5,7 @@ import { useBuilderStore } from "@/store/builder-store";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SectionLibraryCard } from "./SectionLibraryCard";
 import { PropertiesForm } from "./PropertiesForm";
+import { ColorsPanel } from "./ColorsPanel";
 import {
   Accordion,
   AccordionContent,
@@ -23,11 +24,11 @@ function findSectionName(type: string): string {
 
 export function InspectorPanel() {
   const activeTab = useBuilderStore((s) => s.activeTab);
-  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
-  const blocks = useBuilderStore((s) => s.blocks);
+  const selectedBlock = useBuilderStore((s) =>
+    s.selectedBlockId ? s.blocks.find((b) => b.id === s.selectedBlockId) ?? null : null
+  );
   const selectBlock = useBuilderStore((s) => s.selectBlock);
 
-  const selectedBlock = blocks.find((b) => b.id === selectedBlockId) ?? null;
   const isEditingSection = activeTab === "sections" && selectedBlock !== null;
 
   let title = "";
@@ -52,9 +53,7 @@ export function InspectorPanel() {
         break;
       case "colors":
         title = "الألوان";
-        content = (
-          <p className="text-sm text-muted-foreground">إعدادات الألوان...</p>
-        );
+        content = <ColorsPanel />;
         break;
       case "css":
         title = "CSS مخصص";
