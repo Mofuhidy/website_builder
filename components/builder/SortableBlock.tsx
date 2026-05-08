@@ -21,6 +21,8 @@ export function SortableBlock({
 }: SortableBlockProps) {
   const selectedBlockId = useBuilderStore(s => s.selectedBlockId);
   const selectBlock = useBuilderStore(s => s.selectBlock);
+  const editingBlockId = useBuilderStore(s => s.editingBlockId);
+  const setEditingBlock = useBuilderStore(s => s.setEditingBlock);
   const lastAddedBlockId = useBuilderStore(s => s.lastAddedBlockId);
 
   const isSelected = selectedBlockId === block.id;
@@ -73,6 +75,9 @@ export function SortableBlock({
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     selectBlock(block.id);
+    if (editingBlockId !== null) {
+      setEditingBlock(block.id);
+    }
   };
 
   return (
