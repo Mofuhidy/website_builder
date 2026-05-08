@@ -21,7 +21,7 @@ export const ContactSection = memo(function ContactSection({ data }: ContactSect
   return (
     <section className={`py-24 bg-muted ${cairo.className}`} dir="rtl">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 @md:grid-cols-2 gap-16">
           <div>
             <h2 className="text-4xl font-black text-foreground mb-6">{title}</h2>
             <p className="text-muted-foreground mb-10 leading-relaxed">{subtitle}</p>

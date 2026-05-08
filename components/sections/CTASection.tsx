@@ -17,9 +17,9 @@ export const CTASection = memo(function CTASection({ data }: CTASectionProps) {
 
   return (
     <section className={`py-20 px-6 ${cairo.className}`} dir="rtl">
-      <div className="max-w-5xl mx-auto rounded-[3rem] bg-accent p-12 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-accent/30">
+      <div className="max-w-5xl mx-auto rounded-[3rem] bg-accent p-12 @md:p-20 text-center relative overflow-hidden shadow-2xl shadow-accent/30">
         <div className="relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+          <h2 className="text-3xl @md:text-5xl font-black text-white mb-6 leading-tight">
             {title}
           </h2>
           {subtitle && (
