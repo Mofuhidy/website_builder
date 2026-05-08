@@ -6,6 +6,7 @@ import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SectionLibraryCard } from "./SectionLibraryCard";
 import { PropertiesForm } from "./PropertiesForm";
 import { ColorsPanel } from "./ColorsPanel";
+import { CssPanel } from "./CssPanel";
 import {
   Accordion,
   AccordionContent,
@@ -57,9 +58,7 @@ export function InspectorPanel() {
         break;
       case "css":
         title = "CSS مخصص";
-        content = (
-          <p className="text-sm text-muted-foreground">أضف كود CSS...</p>
-        );
+        content = <CssPanel />;
         break;
       case "sections":
         title = "الأقسام";

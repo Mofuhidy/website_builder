@@ -54,6 +54,12 @@ export function TopToolbar() {
   const setBlocks = useBuilderStore(state => state.setBlocks);
   const themeColors = useBuilderStore(state => state.themeColors);
   const setThemeColor = useBuilderStore(state => state.setThemeColor);
+  const customCss = useBuilderStore(state => state.customCss);
+  const setCustomCss = useBuilderStore(state => state.setCustomCss);
+  const undo = useBuilderStore(state => state.undo);
+  const redo = useBuilderStore(state => state.redo);
+  const canUndo = useBuilderStore(state => state.canUndo());
+  const canRedo = useBuilderStore(state => state.canRedo());
   const isDirty = useBuilderStore(state => state.isDirty);
   const markSaved = useBuilderStore(state => state.markSaved);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +71,7 @@ export function TopToolbar() {
 
   const handleExport = async () => {
     setIsExporting(true);
-    const exportData = { version: 1, themeColors, blocks };
+    const exportData = { version: 1, themeColors, customCss, blocks };
     const [dataStr] = await Promise.all([
       Promise.resolve(JSON.stringify(exportData, null, 2)),
       new Promise(r => setTimeout(r, MIN_LOADING_MS)),
@@ -136,6 +142,9 @@ export function TopToolbar() {
               setThemeColor(key as keyof typeof themeColors, parsed.themeColors[key]);
             });
           }
+          if (typeof parsed.customCss === "string") {
+            setCustomCss(parsed.customCss);
+          }
           toast.success("تم استيراد التصميم بنجاح.");
         } else {
           toast.error("الملف لا يحتوي على تصميم صالح.");
@@ -156,7 +165,7 @@ export function TopToolbar() {
       {/* Right side (starts visually on the right in RTL) */}
       <div className="flex items-center gap-4">
         <button
-          className="text-muted-foreground hover:text-foreground transition-colors"
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
           aria-label="العودة">
           <ArrowRightIcon className="w-5 h-5" />
         </button>
@@ -184,12 +193,16 @@ export function TopToolbar() {
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
           <button
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={undo}
+            disabled={!canUndo}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             aria-label="تراجع">
             <ArrowUturnLeftIcon className="w-4 h-4" />
           </button>
           <button
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={redo}
+            disabled={!canRedo}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             aria-label="إعادة">
             <ArrowUturnRightIcon className="w-4 h-4" />
           </button>
@@ -198,7 +211,7 @@ export function TopToolbar() {
         <button
           onClick={handleImportClick}
           disabled={isImporting}
-          className="hidden sm:flex items-center gap-1.5 p-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+          className="hidden sm:flex items-center gap-1.5 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:hover:bg-transparent"
           aria-label="استيراد"
           title="استيراد JSON">
           {isImporting ? <Spinner /> : <ArrowDownTrayIcon className="w-4 h-4" />}
@@ -208,8 +221,8 @@ export function TopToolbar() {
           onClick={handleExport}
           disabled={isExporting}
           className={cn(
-            "hidden sm:flex items-center gap-1.5 p-2 transition-colors disabled:opacity-50",
-            exportDone ? "text-green-500" : "text-muted-foreground hover:text-foreground"
+            "hidden sm:flex items-center gap-1.5 p-2 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent",
+            exportDone ? "text-green-500 bg-green-50" : "text-muted-foreground hover:text-foreground hover:bg-gray-100"
           )}
           aria-label="تصدير"
           title="تصدير JSON">
@@ -223,12 +236,12 @@ export function TopToolbar() {
         </button>
 
         <button
-          className="hidden sm:block p-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="hidden sm:block p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
           aria-label="تغيير اللغة">
           <GlobeAltIcon className="w-4 h-4" />
         </button>
 
-        <button className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-border-color bg-white hover:bg-gray-50 transition-colors">
+        <button className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border-color bg-white hover:bg-gray-50 text-gray-700 transition-colors">
           <ArrowTopRightOnSquareIcon className="w-4 h-4" />
           <span className="hidden lg:inline">زيارة الموقع</span>
         </button>
@@ -258,10 +271,10 @@ export function TopToolbar() {
                 <ArrowUpTrayIcon className="w-4 h-4" /> تصدير
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={undo} disabled={!canUndo}>
                 <ArrowUturnLeftIcon className="w-4 h-4" /> تراجع
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={redo} disabled={!canRedo}>
                 <ArrowUturnRightIcon className="w-4 h-4" /> إعادة
               </DropdownMenuItem>
               <DropdownMenuSeparator />
