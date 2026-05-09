@@ -26,21 +26,21 @@ const FONT_OPTIONS: {
     label: "Cairo",
     description: "خط عربي هندسي وحديث",
     preview: "واجهة عربية واضحة",
-    fontFamily: "'Cairo', system-ui, sans-serif",
+    fontFamily: "var(--font-cairo), system-ui, sans-serif",
   },
   {
     id: "tajawal",
     label: "Tajawal",
     description: "خط بسيط ومناسب للواجهات",
     preview: "واجهة عربية واضحة",
-    fontFamily: "'Tajawal', system-ui, sans-serif",
+    fontFamily: "var(--font-tajawal), system-ui, sans-serif",
   },
   {
     id: "almarai",
     label: "Almarai",
     description: "خط هادئ ومقروء للمحتوى",
     preview: "واجهة عربية واضحة",
-    fontFamily: "'Almarai', system-ui, sans-serif",
+    fontFamily: "var(--font-almarai), system-ui, sans-serif",
   },
 ];
 

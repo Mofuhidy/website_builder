@@ -1,50 +1,73 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { Suspense, useMemo } from "react";
 import { BuilderBlock } from "@/store/builder-store";
-import { findSectionRegistryItem, type JsonValue } from "@/lib/section-registry";
-import { HeaderSection } from "./HeaderSection";
-import { HeroSection } from "./HeroSection";
-import { ServicesSection } from "./ServicesSection";
-import { FeaturesSection } from "./FeaturesSection";
-import { CTASection } from "./CTASection";
-import { FAQSection } from "./FAQSection";
-import { FooterSection } from "./FooterSection";
-import { TextSection } from "./TextSection";
-import { ContactSection } from "./ContactSection";
-import { GallerySection } from "./GallerySection";
-import { TestimonialsSection } from "./TestimonialsSection";
+import { CATEGORY_REGISTRY } from "@/lib/section-registry";
+import {
+  LazyHeaderSection,
+  LazyHeroSection,
+  LazyServicesSection,
+  LazyFeaturesSection,
+  LazyCTASection,
+  LazyFAQSection,
+  LazyFooterSection,
+  LazyTextSection,
+  LazyContactSection,
+  LazyGallerySection,
+  LazyTestimonialsSection,
+} from "./lazy-sections";
 
 interface SectionRendererProps {
   block: BuilderBlock;
 }
 
-const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: Record<string, JsonValue> }>> = {
-  header: HeaderSection,
-  hero: HeroSection,
-  services: ServicesSection,
-  features: FeaturesSection,
-  cta: CTASection,
-  faq: FAQSection,
-  footer: FooterSection,
-  text: TextSection,
-  contact: ContactSection,
-  gallery: GallerySection,
-  testimonials: TestimonialsSection,
+const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
+  header: LazyHeaderSection,
+  hero: LazyHeroSection,
+  services: LazyServicesSection,
+  features: LazyFeaturesSection,
+  cta: LazyCTASection,
+  faq: LazyFAQSection,
+  footer: LazyFooterSection,
+  text: LazyTextSection,
+  contact: LazyContactSection,
+  gallery: LazyGallerySection,
+  testimonials: LazyTestimonialsSection,
 };
+
+function SectionSkeleton() {
+  return (
+    <div className="p-16 border-2 border-dashed border-border-color rounded-3xl text-center text-muted-foreground bg-muted/50 animate-pulse">
+      <p className="text-lg font-bold">جاري التحميل...</p>
+    </div>
+  );
+}
+
+function getDefaultData(type: string) {
+  for (const category of CATEGORY_REGISTRY) {
+    for (const item of category.items) {
+      if (item.id === type) return item.defaultData;
+    }
+  }
+  return {};
+}
 
 export const SectionRenderer = React.memo(function SectionRenderer({
   block,
 }: SectionRendererProps) {
   const data = useMemo(() => {
-    const defaults = findSectionRegistryItem(block.type)?.defaultData ?? {};
+    const defaults = getDefaultData(block.type);
     return { ...defaults, ...block.data };
   }, [block.type, block.data]);
 
   const Component = SECTION_COMPONENTS[block.type];
 
   if (Component) {
-    return <Component data={data} />;
+    return (
+      <Suspense fallback={<SectionSkeleton />}>
+        <Component data={data} />
+      </Suspense>
+    );
   }
 
   return (

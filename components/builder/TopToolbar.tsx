@@ -83,6 +83,7 @@ function ToolbarSaveButton() {
     <button
       type="button"
       onClick={markSaved}
+      aria-label="حفظ التغييرات"
       className={cn(
         "relative flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-accent-hover transition-colors shadow-sm",
         isDirty
@@ -122,7 +123,7 @@ function MobileMenu({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="outline" size="icon" className="w-9 h-9 border-border-color" />
+          <Button variant="outline" size="icon" className="w-9 h-9 border-border-color" aria-label="قائمة الخيارات" />
         }
       >
         <Bars3Icon className="w-4 h-4" />

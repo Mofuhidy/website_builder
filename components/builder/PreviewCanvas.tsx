@@ -19,9 +19,9 @@ import { SortableBlock } from "./SortableBlock";
 
 const PREVIEW_FONT_FAMILIES: Record<FontFamily, string> = {
   system: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  cairo: "'Cairo', system-ui, sans-serif",
-  tajawal: "'Tajawal', system-ui, sans-serif",
-  almarai: "'Almarai', system-ui, sans-serif",
+  cairo: "var(--font-cairo), system-ui, sans-serif",
+  tajawal: "var(--font-tajawal), system-ui, sans-serif",
+  almarai: "var(--font-almarai), system-ui, sans-serif",
 };
 
 export function PreviewCanvas() {
