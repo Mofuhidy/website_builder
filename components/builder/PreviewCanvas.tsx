@@ -59,8 +59,8 @@ export function PreviewCanvas() {
 
   const draggedBlock = activeId ? blocks.find((b) => b.id === activeId) : null;
   const visibleBlocks = blocks.filter((block) => {
-    if (block.type === "header") return pageSettings.showHeader;
-    if (block.type === "footer") return pageSettings.showFooter;
+    if (block.type === "header") return pageSettings.showHeader !== false;
+    if (block.type === "footer") return pageSettings.showFooter !== false;
     return true;
   });
 

@@ -34,6 +34,37 @@ export const DEFAULT_PAGE_SETTINGS: PageSettings = {
   showFooter: true,
 };
 
+function isPageSettings(value: unknown): value is Partial<PageSettings> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+export function normalizePageSettings(value: unknown): PageSettings {
+  if (!isPageSettings(value)) return DEFAULT_PAGE_SETTINGS;
+
+  return {
+    title:
+      typeof value.title === "string" && value.title.trim().length > 0
+        ? value.title.trim()
+        : DEFAULT_PAGE_SETTINGS.title,
+    slug:
+      typeof value.slug === "string" && value.slug.trim().length > 0
+        ? value.slug
+        : DEFAULT_PAGE_SETTINGS.slug,
+    seoDescription:
+      typeof value.seoDescription === "string"
+        ? value.seoDescription.slice(0, 160)
+        : DEFAULT_PAGE_SETTINGS.seoDescription,
+    showHeader:
+      typeof value.showHeader === "boolean"
+        ? value.showHeader
+        : DEFAULT_PAGE_SETTINGS.showHeader,
+    showFooter:
+      typeof value.showFooter === "boolean"
+        ? value.showFooter
+        : DEFAULT_PAGE_SETTINGS.showFooter,
+  };
+}
+
 export interface Snapshot {
   blocks: BuilderBlock[];
   themeColors: ThemeColors;
@@ -72,6 +103,7 @@ interface BuilderState {
   setCustomCss: (css: string) => void;
   pageSettings: PageSettings;
   setPageSettings: (settings: PageSettings) => void;
+  setPageVisibility: (visibility: Pick<PageSettings, "showHeader" | "showFooter">) => void;
   hasPage: boolean;
   setHasPage: (hasPage: boolean) => void;
   createPage: () => void;
@@ -202,7 +234,15 @@ export const useBuilderStore = create<BuilderState>()(
       setPageSettings: (settings) =>
         set((state) => ({
           ...pushSnapshot(state),
-          pageSettings: settings,
+          pageSettings: normalizePageSettings(settings),
+        })),
+      setPageVisibility: (visibility) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          pageSettings: normalizePageSettings({
+            ...state.pageSettings,
+            ...visibility,
+          }),
         })),
       hasPage: true,
       setHasPage: (hasPage) =>
@@ -304,6 +344,22 @@ export const useBuilderStore = create<BuilderState>()(
         hasPage: state.hasPage,
         editingBlockId: state.editingBlockId,
       }),
+      merge: (persisted, current) => {
+        const persistedState =
+          persisted !== null && typeof persisted === "object" && !Array.isArray(persisted)
+            ? persisted as Partial<BuilderState>
+            : {};
+
+        return {
+          ...current,
+          ...persistedState,
+          pageSettings: normalizePageSettings(persistedState.pageSettings),
+          hasPage:
+            typeof persistedState.hasPage === "boolean"
+              ? persistedState.hasPage
+              : current.hasPage,
+        };
+      },
     },
   ),
 );

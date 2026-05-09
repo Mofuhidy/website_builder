@@ -12,6 +12,9 @@ interface PageSettingsModalProps {
   settings: PageSettings;
   onClose: () => void;
   onSave: (settings: PageSettings) => void;
+  onVisibilityChange: (
+    visibility: Pick<PageSettings, "showHeader" | "showFooter">,
+  ) => void;
 }
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -31,14 +34,15 @@ export function PageSettingsModal({
   settings,
   onClose,
   onSave,
+  onVisibilityChange,
 }: PageSettingsModalProps) {
   const titleId = useId();
   const descriptionId = useId();
   const [title, setTitle] = useState(settings.title);
   const [slug, setSlug] = useState(settings.slug);
   const [seoDescription, setSeoDescription] = useState(settings.seoDescription);
-  const [showHeader, setShowHeader] = useState(settings.showHeader);
-  const [showFooter, setShowFooter] = useState(settings.showFooter);
+  const [showHeader, setShowHeader] = useState(settings.showHeader !== false);
+  const [showFooter, setShowFooter] = useState(settings.showFooter !== false);
 
   useEffect(() => {
     if (!open) return;
@@ -71,6 +75,16 @@ export function PageSettingsModal({
       showHeader,
       showFooter,
     });
+  };
+
+  const handleShowHeaderChange = (checked: boolean) => {
+    setShowHeader(checked);
+    onVisibilityChange({ showHeader: checked, showFooter });
+  };
+
+  const handleShowFooterChange = (checked: boolean) => {
+    setShowFooter(checked);
+    onVisibilityChange({ showHeader, showFooter: checked });
   };
 
   return (
@@ -196,18 +210,20 @@ export function PageSettingsModal({
             </legend>
             <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-700">
               <input
+                id="page-show-header"
                 type="checkbox"
                 checked={showHeader}
-                onChange={(event) => setShowHeader(event.target.checked)}
+                onChange={(event) => handleShowHeaderChange(event.target.checked)}
                 className="h-4 w-4 rounded border-gray-300 accent-[var(--accent)]"
               />
               إظهار رأس الصفحة
             </label>
             <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-700">
               <input
+                id="page-show-footer"
                 type="checkbox"
                 checked={showFooter}
-                onChange={(event) => setShowFooter(event.target.checked)}
+                onChange={(event) => handleShowFooterChange(event.target.checked)}
                 className="h-4 w-4 rounded border-gray-300 accent-[var(--accent)]"
               />
               إظهار ذيل الصفحة

@@ -15,6 +15,7 @@ export function PagesPanel() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const pageSettings = useBuilderStore((state) => state.pageSettings);
   const setPageSettings = useBuilderStore((state) => state.setPageSettings);
+  const setPageVisibility = useBuilderStore((state) => state.setPageVisibility);
   const hasPage = useBuilderStore((state) => state.hasPage);
   const createPage = useBuilderStore((state) => state.createPage);
   const removePage = useBuilderStore((state) => state.removePage);
@@ -89,6 +90,7 @@ export function PagesPanel() {
           open={isSettingsOpen}
           settings={pageSettings}
           onClose={() => setIsSettingsOpen(false)}
+          onVisibilityChange={setPageVisibility}
           onSave={(settings) => {
             setPageSettings(settings);
             setIsSettingsOpen(false);
