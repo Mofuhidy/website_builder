@@ -21,7 +21,7 @@ Build a mini website builder with:
 - Arabic RTL builder interface
 - Right rail tabs for pages, fonts, colors, custom CSS, and sections
 - Single-page builder flow with page settings modal
-- Empty-page state with page restore action
+- Empty-page state with fresh page creation flow
 - Live preview with desktop, tablet, and mobile canvas widths
 - Section selection, floating actions, duplicate, move, delete
 - Drag-and-drop section reordering with `@dnd-kit`
