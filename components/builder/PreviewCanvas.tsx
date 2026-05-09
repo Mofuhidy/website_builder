@@ -11,6 +11,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { DocumentMinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
 import { SortableBlock } from "./SortableBlock";
@@ -24,6 +25,9 @@ export function PreviewCanvas() {
   const selectBlock = useBuilderStore((s) => s.selectBlock);
   const themeColors = useBuilderStore((s) => s.themeColors);
   const customCss = useBuilderStore((s) => s.customCss);
+  const pageSettings = useBuilderStore((s) => s.pageSettings);
+  const hasPage = useBuilderStore((s) => s.hasPage);
+  const createPage = useBuilderStore((s) => s.createPage);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -54,6 +58,11 @@ export function PreviewCanvas() {
   };
 
   const draggedBlock = activeId ? blocks.find((b) => b.id === activeId) : null;
+  const visibleBlocks = blocks.filter((block) => {
+    if (block.type === "header") return pageSettings.showHeader !== false;
+    if (block.type === "footer") return pageSettings.showFooter !== false;
+    return true;
+  });
 
   return (
     <DndContext
@@ -73,7 +82,7 @@ export function PreviewCanvas() {
             deviceMode === "tablet" && "w-full max-w-[768px]",
             deviceMode === "mobile" && "w-full max-w-[375px]",
             "border-border-color",
-            blocks.length === 0 ? "items-center justify-center" : "",
+            !hasPage || visibleBlocks.length === 0 ? "items-center justify-center" : "",
           )}
           style={
             {
@@ -85,22 +94,44 @@ export function PreviewCanvas() {
           }
         >
           {customCss && <style>{customCss}</style>}
-          {blocks.length === 0 ? (
+          {!hasPage ? (
+            <div className="flex flex-col items-center justify-center p-8 text-center">
+              <DocumentMinusIcon className="mb-5 h-14 w-14 text-gray-400" />
+              <p className="text-3xl font-semibold text-gray-500">
+                لا توجد صفحات متاحة
+              </p>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  createPage();
+                }}
+                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800"
+              >
+                <PlusIcon className="h-4 w-4" />
+                إنشاء صفحة جديدة
+              </button>
+            </div>
+          ) : visibleBlocks.length === 0 ? (
             <div className="text-center p-8 pointer-events-none">
-              <p className="text-muted-foreground">اضغط على قسم من المكتبة لإضافته</p>
+              <p className="text-muted-foreground">
+                {blocks.length === 0
+                  ? "اضغط على قسم من المكتبة لإضافته"
+                  : "لا توجد أقسام ظاهرة في المعاينة حاليًا"}
+              </p>
             </div>
           ) : (
             <div className="flex flex-col w-full h-full">
               <SortableContext
-                items={blocks.map((b) => b.id)}
+                items={visibleBlocks.map((b) => b.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {blocks.map((block, idx) => (
+                {visibleBlocks.map((block, idx) => (
                   <SortableBlock
                     key={block.id}
                     block={block}
                     index={idx}
-                    totalBlocks={blocks.length}
+                    totalBlocks={visibleBlocks.length}
                   />
                 ))}
               </SortableContext>

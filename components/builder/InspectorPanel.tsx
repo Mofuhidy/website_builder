@@ -7,6 +7,7 @@ import { SectionLibraryCard } from "./SectionLibraryCard";
 import { PropertiesForm } from "./PropertiesForm";
 import { ColorsPanel } from "./ColorsPanel";
 import { CssPanel } from "./CssPanel";
+import { PagesPanel } from "./PagesPanel";
 import {
   Accordion,
   AccordionContent,
@@ -45,9 +46,7 @@ export function InspectorPanel() {
     switch (activeTab) {
       case "pages":
         title = "الصفحات";
-        content = (
-          <p className="text-sm text-muted-foreground">إدارة صفحات الموقع...</p>
-        );
+        content = <PagesPanel />;
         break;
       case "fonts":
         title = "الخطوط";

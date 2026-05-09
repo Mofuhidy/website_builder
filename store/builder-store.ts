@@ -18,10 +18,59 @@ export interface ThemeColors {
   muted: string;
 }
 
+export interface PageSettings {
+  title: string;
+  slug: string;
+  seoDescription: string;
+  showHeader: boolean;
+  showFooter: boolean;
+}
+
+export const DEFAULT_PAGE_SETTINGS: PageSettings = {
+  title: "الرئيسية",
+  slug: "home",
+  seoDescription: "",
+  showHeader: true,
+  showFooter: true,
+};
+
+function isPageSettings(value: unknown): value is Partial<PageSettings> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+export function normalizePageSettings(value: unknown): PageSettings {
+  if (!isPageSettings(value)) return DEFAULT_PAGE_SETTINGS;
+
+  return {
+    title:
+      typeof value.title === "string" && value.title.trim().length > 0
+        ? value.title.trim()
+        : DEFAULT_PAGE_SETTINGS.title,
+    slug:
+      typeof value.slug === "string" && value.slug.trim().length > 0
+        ? value.slug
+        : DEFAULT_PAGE_SETTINGS.slug,
+    seoDescription:
+      typeof value.seoDescription === "string"
+        ? value.seoDescription.slice(0, 160)
+        : DEFAULT_PAGE_SETTINGS.seoDescription,
+    showHeader:
+      typeof value.showHeader === "boolean"
+        ? value.showHeader
+        : DEFAULT_PAGE_SETTINGS.showHeader,
+    showFooter:
+      typeof value.showFooter === "boolean"
+        ? value.showFooter
+        : DEFAULT_PAGE_SETTINGS.showFooter,
+  };
+}
+
 export interface Snapshot {
   blocks: BuilderBlock[];
   themeColors: ThemeColors;
   customCss: string;
+  pageSettings: PageSettings;
+  hasPage: boolean;
 }
 
 interface BuilderState {
@@ -52,6 +101,13 @@ interface BuilderState {
   setThemeColors: (colors: ThemeColors) => void;
   customCss: string;
   setCustomCss: (css: string) => void;
+  pageSettings: PageSettings;
+  setPageSettings: (settings: PageSettings) => void;
+  setPageVisibility: (visibility: Pick<PageSettings, "showHeader" | "showFooter">) => void;
+  hasPage: boolean;
+  setHasPage: (hasPage: boolean) => void;
+  createPage: () => void;
+  removePage: () => void;
 
   past: Snapshot[];
   future: Snapshot[];
@@ -61,12 +117,13 @@ interface BuilderState {
   canRedo: () => boolean;
 }
 
-// Helper to push history state before changes
 function pushSnapshot(state: BuilderState): Partial<BuilderState> {
   const snapshot: Snapshot = {
     blocks: state.blocks,
     themeColors: state.themeColors,
     customCss: state.customCss,
+    pageSettings: state.pageSettings,
+    hasPage: state.hasPage,
   };
   return {
     past: [...state.past, snapshot],
@@ -118,6 +175,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: state.blocks,
             themeColors: state.themeColors,
             customCss: state.customCss,
+            pageSettings: state.pageSettings,
+            hasPage: state.hasPage,
           };
           return {
             past: newPast,
@@ -125,6 +184,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: previous.blocks,
             themeColors: previous.themeColors,
             customCss: previous.customCss,
+            pageSettings: previous.pageSettings,
+            hasPage: previous.hasPage,
             isDirty: true,
           };
         }),
@@ -138,6 +199,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: state.blocks,
             themeColors: state.themeColors,
             customCss: state.customCss,
+            pageSettings: state.pageSettings,
+            hasPage: state.hasPage,
           };
           return {
             past: [...state.past, currentSnapshot],
@@ -145,6 +208,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: next.blocks,
             themeColors: next.themeColors,
             customCss: next.customCss,
+            pageSettings: next.pageSettings,
+            hasPage: next.hasPage,
             isDirty: true,
           };
         }),
@@ -164,6 +229,39 @@ export const useBuilderStore = create<BuilderState>()(
         set((state) => ({
           ...pushSnapshot(state),
           themeColors: colors,
+        })),
+      pageSettings: DEFAULT_PAGE_SETTINGS,
+      setPageSettings: (settings) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          pageSettings: normalizePageSettings(settings),
+        })),
+      setPageVisibility: (visibility) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          pageSettings: normalizePageSettings({
+            ...state.pageSettings,
+            ...visibility,
+          }),
+        })),
+      hasPage: true,
+      setHasPage: (hasPage) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage,
+        })),
+      createPage: () =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage: true,
+          pageSettings: DEFAULT_PAGE_SETTINGS,
+        })),
+      removePage: () =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage: false,
+          selectedBlockId: null,
+          editingBlockId: null,
         })),
 
       addBlock: (block) =>
@@ -242,8 +340,26 @@ export const useBuilderStore = create<BuilderState>()(
         activeTab: state.activeTab,
         themeColors: state.themeColors,
         customCss: state.customCss,
+        pageSettings: state.pageSettings,
+        hasPage: state.hasPage,
         editingBlockId: state.editingBlockId,
       }),
+      merge: (persisted, current) => {
+        const persistedState =
+          persisted !== null && typeof persisted === "object" && !Array.isArray(persisted)
+            ? persisted as Partial<BuilderState>
+            : {};
+
+        return {
+          ...current,
+          ...persistedState,
+          pageSettings: normalizePageSettings(persistedState.pageSettings),
+          hasPage:
+            typeof persistedState.hasPage === "boolean"
+              ? persistedState.hasPage
+              : current.hasPage,
+        };
+      },
     },
   ),
 );
