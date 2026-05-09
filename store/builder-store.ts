@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { JsonValue, SectionType } from "@/lib/section-registry";
+import { normalizeFontFamily, normalizePageSettings } from "@/lib/builder-utils";
 
 export type TabType = "pages" | "fonts" | "colors" | "css" | "sections";
 export type DeviceMode = "desktop" | "tablet" | "mobile";
@@ -37,50 +38,7 @@ export const DEFAULT_PAGE_SETTINGS: PageSettings = {
 
 export const DEFAULT_FONT_FAMILY: FontFamily = "system";
 
-function isPageSettings(value: unknown): value is Partial<PageSettings> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
-export function normalizePageSettings(value: unknown): PageSettings {
-  if (!isPageSettings(value)) return DEFAULT_PAGE_SETTINGS;
-
-  return {
-    title:
-      typeof value.title === "string" && value.title.trim().length > 0
-        ? value.title.trim()
-        : DEFAULT_PAGE_SETTINGS.title,
-    slug:
-      typeof value.slug === "string" && value.slug.trim().length > 0
-        ? value.slug
-        : DEFAULT_PAGE_SETTINGS.slug,
-    seoDescription:
-      typeof value.seoDescription === "string"
-        ? value.seoDescription.slice(0, 160)
-        : DEFAULT_PAGE_SETTINGS.seoDescription,
-    showHeader:
-      typeof value.showHeader === "boolean"
-        ? value.showHeader
-        : DEFAULT_PAGE_SETTINGS.showHeader,
-    showFooter:
-      typeof value.showFooter === "boolean"
-        ? value.showFooter
-        : DEFAULT_PAGE_SETTINGS.showFooter,
-  };
-}
-
-export function normalizeFontFamily(value: unknown): FontFamily {
-  if (
-    value === "system" ||
-    value === "cairo" ||
-    value === "tajawal" ||
-    value === "almarai"
-  ) {
-    return value;
-  }
-
-  return DEFAULT_FONT_FAMILY;
-}
-
+// Exporting types used by utils
 export interface Snapshot {
   blocks: BuilderBlock[];
   themeColors: ThemeColors;
