@@ -139,10 +139,10 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
         defaultData: {
           title: "خدمات متميزة",
           items: [
-            { name: "استضافة سحابية", desc: "نوفر لك أفضل الحلول السحابية لتوسيع نطاق أعمالك." },
-            { name: "أمن المعلومات", desc: "حماية بياناتك هي أولويتنا القصوى باستخدام أحدث التقنيات." },
-            { name: "تحديثات مستمرة", desc: "نعمل دائماً على تطوير خدماتنا لتبقى في الطليعة." },
-            { name: "هوية رقمية", desc: "نساعدك في بناء هوية رقمية فريدة تعبر عنك." },
+            { name: "استضافة سحابية", desc: "نوفر لك أفضل الحلول السحابية لتوسيع نطاق أعمالك.", mediaType: "icon", icon: "cloud", imageUrl: "" },
+            { name: "أمن المعلومات", desc: "حماية بياناتك هي أولويتنا القصوى باستخدام أحدث التقنيات.", mediaType: "icon", icon: "lock", imageUrl: "" },
+            { name: "تحديثات مستمرة", desc: "نعمل دائماً على تطوير خدماتنا لتبقى في الطليعة.", mediaType: "icon", icon: "refresh", imageUrl: "" },
+            { name: "هوية رقمية", desc: "نساعدك في بناء هوية رقمية فريدة تعبر عنك.", mediaType: "icon", icon: "fingerprint", imageUrl: "" },
           ],
         },
         editableFields: [
@@ -154,8 +154,11 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
             listFields: [
               { key: "name", label: "اسم الخدمة", type: "text" },
               { key: "desc", label: "الوصف", type: "textarea" },
+              { key: "mediaType", label: "نوع الشعار: icon أو image أو emoji", type: "text" },
+              { key: "icon", label: "الأيقونة أو الرمز", type: "text" },
+              { key: "imageUrl", label: "رابط صورة الشعار", type: "image" },
             ],
-            defaultItem: { name: "خدمة جديدة", desc: "وصف الخدمة..." },
+            defaultItem: { name: "خدمة جديدة", desc: "وصف الخدمة...", mediaType: "icon", icon: "sparkles", imageUrl: "" },
           },
         ],
       },
@@ -166,9 +169,9 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
         defaultData: {
           title: "لماذا تختارنا؟",
           items: [
-            { title: "سرعة فائقة", desc: "نحن نضمن أن موقعك يعمل بأعلى سرعة ممكنة لتوفير أفضل تجربة مستخدم." },
-            { title: "أمان متكامل", desc: "بياناتك وبيانات عملائك في أمان تام مع أنظمة الحماية المتقدمة لدينا." },
-            { title: "جودة استثنائية", desc: "نلتزم بأعلى معايير الجودة في التصميم والتطوير لضمان تميزك." },
+            { title: "سرعة فائقة", desc: "نحن نضمن أن موقعك يعمل بأعلى سرعة ممكنة لتوفير أفضل تجربة مستخدم.", mediaType: "icon", icon: "rocket", imageUrl: "" },
+            { title: "أمان متكامل", desc: "بياناتك وبيانات عملائك في أمان تام مع أنظمة الحماية المتقدمة لدينا.", mediaType: "icon", icon: "shield", imageUrl: "" },
+            { title: "جودة استثنائية", desc: "نلتزم بأعلى معايير الجودة في التصميم والتطوير لضمان تميزك.", mediaType: "icon", icon: "star", imageUrl: "" },
           ],
         },
         editableFields: [
@@ -180,8 +183,11 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
             listFields: [
               { key: "title", label: "عنوان الميزة", type: "text" },
               { key: "desc", label: "الوصف", type: "textarea" },
+              { key: "mediaType", label: "نوع الشعار: icon أو image أو emoji", type: "text" },
+              { key: "icon", label: "الأيقونة أو الرمز", type: "text" },
+              { key: "imageUrl", label: "رابط صورة الشعار", type: "image" },
             ],
-            defaultItem: { title: "ميزة جديدة", desc: "وصف الميزة..." },
+            defaultItem: { title: "ميزة جديدة", desc: "وصف الميزة...", mediaType: "icon", icon: "bolt", imageUrl: "" },
           },
         ],
       },
@@ -254,8 +260,9 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
               { key: "name", label: "اسم العميل", type: "text" },
               { key: "role", label: "المسمى الوظيفي", type: "text" },
               { key: "text", label: "التقييم", type: "textarea" },
+              { key: "avatarUrl", label: "رابط صورة العميل", type: "image" },
             ],
-            defaultItem: { name: "اسم العميل", role: "المسمى الوظيفي", text: "تقييم..." },
+            defaultItem: { name: "اسم العميل", role: "المسمى الوظيفي", text: "تقييم...", avatarUrl: "" },
           },
         ],
       },
@@ -263,8 +270,28 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
         id: "gallery",
         name: "معرض الصور",
         icon: PhotoIcon,
-        defaultData: { title: "معرض الأعمال" },
-        editableFields: [{ key: "title", label: "عنوان القسم", type: "text" }],
+        defaultData: {
+          title: "معرض الأعمال",
+          items: [
+            { imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop", alt: "مساحة عمل", caption: "مساحة عمل حديثة" },
+            { imageUrl: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?q=80&w=1200&auto=format&fit=crop", alt: "مكتب", caption: "تفاصيل المشروع" },
+            { imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop", alt: "فريق", caption: "بيئة إنتاجية" },
+          ],
+        },
+        editableFields: [
+          { key: "title", label: "عنوان القسم", type: "text" },
+          {
+            key: "items",
+            label: "الصور",
+            type: "list",
+            listFields: [
+              { key: "imageUrl", label: "رابط الصورة", type: "image" },
+              { key: "alt", label: "النص البديل", type: "text" },
+              { key: "caption", label: "التسمية", type: "text" },
+            ],
+            defaultItem: { imageUrl: "", alt: "", caption: "صورة جديدة" },
+          },
+        ],
       },
       {
         id: "contact",
