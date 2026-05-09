@@ -1,10 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 interface FooterSectionProps {
   data: Record<string, JsonValue>;
@@ -16,7 +13,7 @@ export const FooterSection = memo(function FooterSection({ data }: FooterSection
   const copyright = (data.copyright as string) || "© 2026 جميع الحقوق محفوظة.";
 
   return (
-    <footer className={`py-12 px-6 bg-foreground text-background ${cairo.className}`} dir="rtl">
+    <footer className="py-12 px-6 bg-foreground text-background" dir="rtl">
       <div className="max-w-6xl mx-auto flex flex-col @md:flex-row justify-between items-center gap-8">
         <div>
           <h3 className="text-2xl font-black mb-1">{logo}</h3>

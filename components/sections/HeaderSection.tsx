@@ -1,10 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 interface NavLink {
   label: string;
@@ -26,7 +23,7 @@ export const HeaderSection = memo(function HeaderSection({ data }: HeaderSection
 
   return (
     <header
-      className={`py-4 px-6 bg-background/80 backdrop-blur-md border-b border-border-color sticky top-0 z-40 ${cairo.className}`}
+      className="py-4 px-6 bg-background/80 backdrop-blur-md border-b border-border-color sticky top-0 z-40"
       dir="rtl"
     >
       <div className="max-w-6xl mx-auto flex justify-between items-center">

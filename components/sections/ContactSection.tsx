@@ -1,11 +1,8 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 interface ContactSectionProps {
   data: Record<string, JsonValue>;
@@ -19,7 +16,7 @@ export const ContactSection = memo(function ContactSection({ data }: ContactSect
   const buttonText = (data.buttonText as string) || "إرسال الرسالة";
 
   return (
-    <section className={`py-24 bg-muted ${cairo.className}`} dir="rtl">
+    <section className="py-24 bg-muted" dir="rtl">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 @md:grid-cols-2 gap-16">
           <div>

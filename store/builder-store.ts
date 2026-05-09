@@ -4,6 +4,7 @@ import { JsonValue, SectionType } from "@/lib/section-registry";
 
 export type TabType = "pages" | "fonts" | "colors" | "css" | "sections";
 export type DeviceMode = "desktop" | "tablet" | "mobile";
+export type FontFamily = "system" | "cairo" | "tajawal" | "almarai";
 
 export interface BuilderBlock {
   id: string;
@@ -33,6 +34,8 @@ export const DEFAULT_PAGE_SETTINGS: PageSettings = {
   showHeader: true,
   showFooter: true,
 };
+
+export const DEFAULT_FONT_FAMILY: FontFamily = "system";
 
 function isPageSettings(value: unknown): value is Partial<PageSettings> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -65,12 +68,26 @@ export function normalizePageSettings(value: unknown): PageSettings {
   };
 }
 
+export function normalizeFontFamily(value: unknown): FontFamily {
+  if (
+    value === "system" ||
+    value === "cairo" ||
+    value === "tajawal" ||
+    value === "almarai"
+  ) {
+    return value;
+  }
+
+  return DEFAULT_FONT_FAMILY;
+}
+
 export interface Snapshot {
   blocks: BuilderBlock[];
   themeColors: ThemeColors;
   customCss: string;
   pageSettings: PageSettings;
   hasPage: boolean;
+  fontFamily: FontFamily;
 }
 
 interface BuilderState {
@@ -104,6 +121,8 @@ interface BuilderState {
   pageSettings: PageSettings;
   setPageSettings: (settings: PageSettings) => void;
   setPageVisibility: (visibility: Pick<PageSettings, "showHeader" | "showFooter">) => void;
+  fontFamily: FontFamily;
+  setFontFamily: (fontFamily: FontFamily) => void;
   hasPage: boolean;
   setHasPage: (hasPage: boolean) => void;
   createPage: () => void;
@@ -124,6 +143,7 @@ function pushSnapshot(state: BuilderState): Partial<BuilderState> {
     customCss: state.customCss,
     pageSettings: state.pageSettings,
     hasPage: state.hasPage,
+    fontFamily: state.fontFamily,
   };
   return {
     past: [...state.past, snapshot],
@@ -177,6 +197,7 @@ export const useBuilderStore = create<BuilderState>()(
             customCss: state.customCss,
             pageSettings: state.pageSettings,
             hasPage: state.hasPage,
+            fontFamily: state.fontFamily,
           };
           return {
             past: newPast,
@@ -186,6 +207,7 @@ export const useBuilderStore = create<BuilderState>()(
             customCss: previous.customCss,
             pageSettings: previous.pageSettings,
             hasPage: previous.hasPage,
+            fontFamily: previous.fontFamily,
             isDirty: true,
           };
         }),
@@ -201,6 +223,7 @@ export const useBuilderStore = create<BuilderState>()(
             customCss: state.customCss,
             pageSettings: state.pageSettings,
             hasPage: state.hasPage,
+            fontFamily: state.fontFamily,
           };
           return {
             past: [...state.past, currentSnapshot],
@@ -210,6 +233,7 @@ export const useBuilderStore = create<BuilderState>()(
             customCss: next.customCss,
             pageSettings: next.pageSettings,
             hasPage: next.hasPage,
+            fontFamily: next.fontFamily,
             isDirty: true,
           };
         }),
@@ -243,6 +267,12 @@ export const useBuilderStore = create<BuilderState>()(
             ...state.pageSettings,
             ...visibility,
           }),
+        })),
+      fontFamily: DEFAULT_FONT_FAMILY,
+      setFontFamily: (fontFamily) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          fontFamily,
         })),
       hasPage: true,
       setHasPage: (hasPage) =>
@@ -342,6 +372,7 @@ export const useBuilderStore = create<BuilderState>()(
         customCss: state.customCss,
         pageSettings: state.pageSettings,
         hasPage: state.hasPage,
+        fontFamily: state.fontFamily,
         editingBlockId: state.editingBlockId,
       }),
       merge: (persisted, current) => {
@@ -358,6 +389,7 @@ export const useBuilderStore = create<BuilderState>()(
             typeof persistedState.hasPage === "boolean"
               ? persistedState.hasPage
               : current.hasPage,
+          fontFamily: normalizeFontFamily(persistedState.fontFamily),
         };
       },
     },

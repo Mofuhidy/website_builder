@@ -8,6 +8,7 @@ import { PropertiesForm } from "./PropertiesForm";
 import { ColorsPanel } from "./ColorsPanel";
 import { CssPanel } from "./CssPanel";
 import { PagesPanel } from "./PagesPanel";
+import { FontsPanel } from "./FontsPanel";
 import {
   Accordion,
   AccordionContent,
@@ -50,9 +51,7 @@ export function InspectorPanel() {
         break;
       case "fonts":
         title = "الخطوط";
-        content = (
-          <p className="text-sm text-muted-foreground">إعدادات الخطوط...</p>
-        );
+        content = <FontsPanel />;
         break;
       case "colors":
         title = "الألوان";
