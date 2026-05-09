@@ -463,9 +463,19 @@ export interface PendingImport {
   warningMessage?: string;
 }
 
+function shouldRejectImportedBlocks(
+  rawBlocks: unknown[],
+  normalizedBlocks: NormalizedBlocksResult,
+) {
+  return rawBlocks.length > 0 && normalizedBlocks.blocks.length === 0;
+}
+
 export function createPendingImport(parsed: unknown): PendingImport | null {
   if (Array.isArray(parsed)) {
     const normalizedBlocks = normalizeImportedBlocks(parsed);
+    if (shouldRejectImportedBlocks(parsed, normalizedBlocks)) {
+      return null;
+    }
 
     return {
       blocks: normalizedBlocks.blocks,
@@ -484,6 +494,9 @@ export function createPendingImport(parsed: unknown): PendingImport | null {
   }
 
   const normalizedBlocks = normalizeImportedBlocks(parsed.blocks);
+  if (shouldRejectImportedBlocks(parsed.blocks, normalizedBlocks)) {
+    return null;
+  }
   const normalizedCustomCss = normalizeCustomCss(parsed.customCss);
   const rawCustomCss = typeof parsed.customCss === "string" ? parsed.customCss : "";
 

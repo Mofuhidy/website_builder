@@ -2,14 +2,13 @@
 
 Frontend technical assignment for Rekaz.
 
-This project is a responsive Arabic RTL mini website builder built with Next.js. It focuses on a single-page editing flow with a section library, live preview, import/export, page-level settings, preview font controls, drag-and-drop reordering, and editable structured content.
+This project is a responsive Arabic RTL mini website builder built with Next.js. It focuses on a single-page editing flow with a section library, import/export, page-level settings, preview font controls, drag-and-drop reordering, and editable structured content.
 
 ## Assignment Objective
 
 Build a mini website builder with:
 
 - Section library click-to-add
-- Live preview area
 - JSON import/export
 - Editable sections
 - Delete and reorder sections using drag and drop
@@ -364,4 +363,3 @@ npm run start
 Deployment on Vercel.
 
 - Production URL: [websitebuilder-pi.vercel.app](https://websitebuilder-pi.vercel.app)
-- Deployment URL: [websitebuilder-o36a9xe4e-mofuhidys-projects.vercel.app](https://websitebuilder-o36a9xe4e-mofuhidys-projects.vercel.app)

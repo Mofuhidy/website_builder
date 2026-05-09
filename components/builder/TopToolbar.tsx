@@ -99,7 +99,19 @@ function ToolbarSaveButton() {
   );
 }
 
-function MobileMenu() {
+function MobileMenu({
+  onImport,
+  onExport,
+  isImporting,
+  isExporting,
+  exportDone,
+}: {
+  onImport: () => void;
+  onExport: () => void;
+  isImporting: boolean;
+  isExporting: boolean;
+  exportDone: boolean;
+}) {
   const undo = useBuilderStore((s) => s.undo);
   const redo = useBuilderStore((s) => s.redo);
   const canUndo = useBuilderStore((s) => s.canUndo());
@@ -116,6 +128,20 @@ function MobileMenu() {
         <Bars3Icon className="w-4 h-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent dir="rtl" align="end">
+        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={onImport} disabled={isImporting}>
+          {isImporting ? <Spinner /> : <ArrowDownTrayIcon className="w-4 h-4" />} استيراد
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={onExport} disabled={isExporting}>
+          {isExporting ? (
+            <Spinner />
+          ) : exportDone ? (
+            <CheckCircleIcon className="w-4 h-4" />
+          ) : (
+            <ArrowUpTrayIcon className="w-4 h-4" />
+          )}{" "}
+          تصدير
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem className="gap-2 cursor-pointer" onClick={undo} disabled={!canUndo}>
           <ArrowUturnLeftIcon className="w-4 h-4" /> تراجع
         </DropdownMenuItem>
@@ -217,25 +243,7 @@ export function TopToolbar() {
   const applyPendingImport = () => {
     if (!pendingImport) return;
 
-    const {
-      selectBlock,
-      setEditingBlock,
-      setBlocks,
-      setThemeColors,
-      setCustomCss,
-      setPageSettings,
-      setHasPage,
-      setFontFamily,
-    } = useBuilderStore.getState();
-
-    selectBlock(null);
-    setEditingBlock(null);
-    setBlocks(pendingImport.blocks);
-    setThemeColors(pendingImport.themeColors);
-    setCustomCss(pendingImport.customCss);
-    setPageSettings(pendingImport.pageSettings);
-    setHasPage(pendingImport.hasPage);
-    setFontFamily(pendingImport.fontFamily);
+    useBuilderStore.getState().applyImportedState(pendingImport);
     toast.success(pendingImport.successMessage);
     setPendingImport(null);
   };
@@ -303,7 +311,13 @@ export function TopToolbar() {
           </button>
 
           <div className="md:hidden">
-            <MobileMenu />
+            <MobileMenu
+              onImport={handleImportClick}
+              onExport={handleExport}
+              isImporting={isImporting}
+              isExporting={isExporting}
+              exportDone={exportDone}
+            />
           </div>
 
           <ToolbarSaveButton />
@@ -314,6 +328,7 @@ export function TopToolbar() {
         open={pendingImport !== null}
         title="تأكيد استيراد التصميم"
         description="سيتم استبدال التصميم الحالي بالكامل، بما في ذلك الأقسام والألوان وإعدادات الصفحة والخطوط. لا يمكن التراجع عن الاستبدال إلا باستخدام التراجع إذا كان متاحًا."
+        notice={pendingImport?.warningMessage}
         onCancel={() => setPendingImport(null)}
         onConfirm={applyPendingImport}
       />
