@@ -7,8 +7,10 @@ import { PreviewCanvas } from "./PreviewCanvas";
 import { useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useRenderCount } from "@/lib/render-tracker";
 
 export function BuilderShell() {
+  useRenderCount("BuilderShell");
   const sidebarWidth = useBuilderStore(s => s.sidebarWidth);
   const setSidebarWidth = useBuilderStore(s => s.setSidebarWidth);
   const isResizing = useRef(false);
@@ -17,10 +19,10 @@ export function BuilderShell() {
   const undo = useBuilderStore(s => s.undo);
   const redo = useBuilderStore(s => s.redo);
 
-  useHotkeys("cmd+z", () => undo(), [undo]);
-  useHotkeys("ctrl+z", () => undo(), [undo]);
-  useHotkeys("cmd+shift+z", () => redo(), [redo]);
-  useHotkeys("ctrl+shift+z", () => redo(), [redo]);
+  useHotkeys("cmd+z", undo);
+  useHotkeys("ctrl+z", undo);
+  useHotkeys("cmd+shift+z", redo);
+  useHotkeys("ctrl+shift+z", redo);
 
   const startResizing = useCallback(() => {
     isResizing.current = true;

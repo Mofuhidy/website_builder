@@ -1,21 +1,24 @@
 "use client";
 
+import { Suspense } from "react";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useBuilderStore } from "@/store/builder-store";
+import { useRenderCount } from "@/lib/render-tracker";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SectionLibraryCard } from "./SectionLibraryCard";
-import { PropertiesForm } from "./PropertiesForm";
-import { ColorsPanel } from "./ColorsPanel";
-import { CssPanel } from "./CssPanel";
-import { PagesPanel } from "./PagesPanel";
-import { FontsPanel } from "./FontsPanel";
+import {
+  LazyPropertiesForm,
+  LazyPagesPanel,
+  LazyFontsPanel,
+  LazyColorsPanel,
+  LazyCssPanel,
+} from "./lazy-panels";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion, AnimatePresence } from "framer-motion";
 
 function findSectionName(type: string): string {
   for (const category of CATEGORY_REGISTRY) {
@@ -26,13 +29,22 @@ function findSectionName(type: string): string {
   return type;
 }
 
+function PanelSkeleton() {
+  return (
+    <div className="flex items-center justify-center h-40">
+      <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 export function InspectorPanel() {
+  useRenderCount("InspectorPanel");
   const activeTab = useBuilderStore((s) => s.activeTab);
   const editingBlockId = useBuilderStore((s) => s.editingBlockId);
   const setEditingBlock = useBuilderStore((s) => s.setEditingBlock);
-  
+
   const selectedBlock = useBuilderStore((s) =>
-    editingBlockId ? s.blocks.find((b) => b.id === editingBlockId) ?? null : null
+    editingBlockId ? s.blocks.find((b) => b.id === editingBlockId) ?? null : null,
   );
 
   const isEditingSection = activeTab === "sections" && editingBlockId !== null;
@@ -42,24 +54,24 @@ export function InspectorPanel() {
 
   if (isEditingSection) {
     title = selectedBlock ? findSectionName(selectedBlock.type) : "تعديل القسم";
-    content = <PropertiesForm />;
+    content = <LazyPropertiesForm />;
   } else {
     switch (activeTab) {
       case "pages":
         title = "الصفحات";
-        content = <PagesPanel />;
+        content = <LazyPagesPanel />;
         break;
       case "fonts":
         title = "الخطوط";
-        content = <FontsPanel />;
+        content = <LazyFontsPanel />;
         break;
       case "colors":
         title = "الألوان";
-        content = <ColorsPanel />;
+        content = <LazyColorsPanel />;
         break;
       case "css":
         title = "CSS مخصص";
-        content = <CssPanel />;
+        content = <LazyCssPanel />;
         break;
       case "sections":
         title = "الأقسام";
@@ -102,18 +114,12 @@ export function InspectorPanel() {
       </div>
 
       <div className="flex-1 overflow-hidden relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={isEditingSection ? "editing-" + selectedBlock?.id : activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute inset-0 overflow-auto p-4"
-          >
-            {content}
-          </motion.div>
-        </AnimatePresence>
+        <div
+          key={isEditingSection ? "editing-" + selectedBlock?.id : activeTab}
+          className="absolute inset-0 overflow-auto p-4 animate-fade-in"
+        >
+          <Suspense fallback={<PanelSkeleton />}>{content}</Suspense>
+        </div>
       </div>
     </div>
   );

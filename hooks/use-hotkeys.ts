@@ -2,8 +2,7 @@ import { useEffect } from "react";
 
 export function useHotkeys(
   keyCombo: string,
-  callback: (e: KeyboardEvent) => void,
-  dependencies: any[] = []
+  callback: (event: KeyboardEvent) => void,
 ) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -24,5 +23,5 @@ export function useHotkeys(
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [keyCombo, callback, ...dependencies]);
+  }, [keyCombo, callback]);
 }

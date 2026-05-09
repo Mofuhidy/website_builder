@@ -2,14 +2,13 @@
 
 Frontend technical assignment for Rekaz.
 
-This project is a responsive Arabic RTL mini website builder built with Next.js. It focuses on a single-page editing flow with a section library, live preview, import/export, page-level settings, preview font controls, drag-and-drop reordering, and editable structured content.
+This project is a responsive Arabic RTL mini website builder built with Next.js. It focuses on a single-page editing flow with a section library, import/export, page-level settings, preview font controls, drag-and-drop reordering, and editable structured content.
 
 ## Assignment Objective
 
 Build a mini website builder with:
 
 - Section library click-to-add
-- Live preview area
 - JSON import/export
 - Editable sections
 - Delete and reorder sections using drag and drop
@@ -199,6 +198,15 @@ Legacy array-only imports are still accepted and mapped to default global settin
 
 Import flow now includes an overwrite confirmation modal before applying parsed data.
 
+Import normalization also:
+
+- skips unsupported section types safely
+- skips malformed block entries safely
+- repairs duplicate block ids during import
+- restores missing global settings from defaults
+- sanitizes imported custom CSS before preview injection
+- normalizes imported block data against registry defaults
+
 ## Page Settings Schema
 
 ```json
@@ -250,7 +258,7 @@ Theme colors are injected as CSS variables on the preview canvas wrapper.
 
 ## Custom CSS Behavior and Tradeoffs
 
-Custom CSS is injected directly into the preview surface using a `<style>` tag inside the canvas.
+Custom CSS is injected into the preview surface using a `<style>` tag inside the canvas wrapper.
 
 Benefits:
 
@@ -261,6 +269,8 @@ Benefits:
 Tradeoffs:
 
 - CSS is powerful and can affect layout in unexpected ways
+- imported custom CSS is scoped to the preview wrapper as much as possible instead of the full builder UI
+- `@import` rules are stripped and `</style>` breakouts are neutralized before injection
 - this is acceptable for a frontend-only assignment
 - if this builder were connected to a backend or shared between users, custom CSS would need much stricter safety and scoping rules
 
@@ -317,15 +327,17 @@ Manual verification was used for:
 - page settings
 - font switching
 - drag-and-drop
+- malformed import handling
+- fallback behavior for missing global settings
 
-Lightweight unit tests around the store and import normalization would be the next sensible addition.
+Lightweight unit tests around the store and import normalization would still be the next sensible addition.
 
 ## Known Tradeoffs
 
 - Images currently use plain `<img>` tags because the content is user-provided and dynamic
 - Image uploads are stored as data URLs in local state and exported JSON, which is convenient but can increase file size
 - Undo/redo is snapshot-based, not granular patch-based
-- Custom CSS is intentionally permissive
+- Custom CSS is intentionally powerful even after scoping and sanitization, so it should be treated carefully if a backend or multi-user sharing is introduced later
 - The app remains single-page by design; multi-page editing is out of scope for this assignment
 - Some media fields use simple text-driven icon names rather than a richer picker UI
 

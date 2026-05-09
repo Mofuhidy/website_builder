@@ -315,3 +315,13 @@ export const CATEGORY_REGISTRY: SectionCategory[] = [
     ],
   },
 ];
+
+const SECTION_REGISTRY_ITEMS = CATEGORY_REGISTRY.flatMap((category) => category.items);
+
+export function findSectionRegistryItem(type: string) {
+  return SECTION_REGISTRY_ITEMS.find((item) => item.id === type) ?? null;
+}
+
+export function isSectionType(value: unknown): value is SectionType {
+  return typeof value === "string" && findSectionRegistryItem(value) !== null;
+}

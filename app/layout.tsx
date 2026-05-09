@@ -1,7 +1,30 @@
 import type { Metadata } from "next";
+import { Cairo, Tajawal, Almarai } from "next/font/google";
 import { Toaster } from "sonner";
-import "./globals.css";
 import { cn } from "@/lib/utils";
+import { WdyrInit } from "@/components/WdyrInit";
+import "./globals.css";
+
+const cairo = Cairo({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cairo",
+  display: "swap",
+});
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-tajawal",
+  display: "swap",
+});
+
+const almarai = Almarai({
+  subsets: ["arabic"],
+  weight: ["400", "700", "800"],
+  variable: "--font-almarai",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Mini Website Builder",
@@ -14,13 +37,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={cn("h-full antialiased", "font-sans")}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
-      </head>
+    <html
+      lang="ar"
+      dir="rtl"
+      className={cn(
+        "h-full antialiased",
+        "font-sans",
+        cairo.variable,
+        tajawal.variable,
+        almarai.variable,
+      )}
+    >
       <body className="min-h-full flex flex-col">
+        <WdyrInit />
         {children}
         <Toaster position="bottom-center" richColors dir="rtl" />
       </body>

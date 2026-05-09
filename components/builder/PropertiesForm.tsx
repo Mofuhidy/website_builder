@@ -12,16 +12,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuilderStore } from "@/store/builder-store";
-import { CATEGORY_REGISTRY, EditableField, JsonValue, ListItemField } from "@/lib/section-registry";
-
-function findRegistryItem(type: string) {
-  for (const category of CATEGORY_REGISTRY) {
-    for (const item of category.items) {
-      if (item.id === type) return item;
-    }
-  }
-  return null;
-}
+import {
+  EditableField,
+  JsonValue,
+  ListItemField,
+  findSectionRegistryItem,
+} from "@/lib/section-registry";
 
 function getListPreviewLabel(
   item: Record<string, JsonValue>,
@@ -296,7 +292,7 @@ export function PropertiesForm() {
 
   if (!block) return null;
 
-  const registryItem = findRegistryItem(block.type);
+  const registryItem = findSectionRegistryItem(block.type);
   if (!registryItem || registryItem.editableFields.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-8">

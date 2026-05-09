@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
   TrashIcon,
   DocumentDuplicateIcon,
@@ -15,7 +16,7 @@ interface FloatingSectionToolbarProps {
   isLast: boolean;
 }
 
-export function FloatingSectionToolbar({
+export const FloatingSectionToolbar = React.memo(function FloatingSectionToolbar({
   blockId,
   isFirst,
   isLast,
@@ -118,4 +119,4 @@ export function FloatingSectionToolbar({
       </button>
     </div>
   );
-}
+});

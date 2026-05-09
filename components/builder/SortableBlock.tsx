@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BuilderBlock, useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
+import { useRenderTracker } from "@/lib/render-tracker";
 import { SectionRenderer } from "../sections/SectionRenderer";
 import { FloatingSectionToolbar } from "./FloatingSectionToolbar";
 
@@ -14,19 +15,22 @@ interface SortableBlockProps {
   totalBlocks: number;
 }
 
-export function SortableBlock({
+export const SortableBlock = React.memo(function SortableBlock({
   block,
   index,
   totalBlocks,
 }: SortableBlockProps) {
-  const selectedBlockId = useBuilderStore(s => s.selectedBlockId);
+  useRenderTracker("SortableBlock", {
+    blockRef: block,
+    index,
+    totalBlocks,
+    id: block.id,
+    type: block.type,
+  });
+  const isSelected = useBuilderStore(s => s.selectedBlockId === block.id);
+  const isNew = useBuilderStore(s => s.lastAddedBlockId === block.id);
   const selectBlock = useBuilderStore(s => s.selectBlock);
-  const editingBlockId = useBuilderStore(s => s.editingBlockId);
   const setEditingBlock = useBuilderStore(s => s.setEditingBlock);
-  const lastAddedBlockId = useBuilderStore(s => s.lastAddedBlockId);
-
-  const isSelected = selectedBlockId === block.id;
-  const isNew = lastAddedBlockId === block.id;
   const blockRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -75,7 +79,7 @@ export function SortableBlock({
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     selectBlock(block.id);
-    if (editingBlockId !== null) {
+    if (useBuilderStore.getState().editingBlockId !== null) {
       setEditingBlock(block.id);
     }
   };
@@ -105,4 +109,4 @@ export function SortableBlock({
       <SectionRenderer block={block} />
     </div>
   );
-}
+});
