@@ -24,7 +24,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useBuilderStore } from "@/store/builder-store";
+import {
+  DEFAULT_PAGE_SETTINGS,
+  useBuilderStore,
+  type PageSettings,
+} from "@/store/builder-store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
@@ -48,6 +52,53 @@ function Spinner() {
   );
 }
 
+function formatSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizePageSettings(value: unknown): PageSettings {
+  if (!isRecord(value)) return DEFAULT_PAGE_SETTINGS;
+
+  const title =
+    typeof value.title === "string" && value.title.trim().length > 0
+      ? value.title.trim()
+      : DEFAULT_PAGE_SETTINGS.title;
+  const slug =
+    typeof value.slug === "string" && formatSlug(value.slug).length > 0
+      ? formatSlug(value.slug)
+      : DEFAULT_PAGE_SETTINGS.slug;
+  const seoDescription =
+    typeof value.seoDescription === "string"
+      ? value.seoDescription.slice(0, 160)
+      : DEFAULT_PAGE_SETTINGS.seoDescription;
+  const showHeader =
+    typeof value.showHeader === "boolean"
+      ? value.showHeader
+      : DEFAULT_PAGE_SETTINGS.showHeader;
+  const showFooter =
+    typeof value.showFooter === "boolean"
+      ? value.showFooter
+      : DEFAULT_PAGE_SETTINGS.showFooter;
+
+  return {
+    title,
+    slug,
+    seoDescription,
+    showHeader,
+    showFooter,
+  };
+}
+
 export function TopToolbar() {
   const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
   const blocks = useBuilderStore(state => state.blocks);
@@ -58,6 +109,10 @@ export function TopToolbar() {
   const setThemeColors = useBuilderStore(state => state.setThemeColors);
   const customCss = useBuilderStore(state => state.customCss);
   const setCustomCss = useBuilderStore(state => state.setCustomCss);
+  const pageSettings = useBuilderStore(state => state.pageSettings);
+  const setPageSettings = useBuilderStore(state => state.setPageSettings);
+  const hasPage = useBuilderStore(state => state.hasPage);
+  const setHasPage = useBuilderStore(state => state.setHasPage);
   const undo = useBuilderStore(state => state.undo);
   const redo = useBuilderStore(state => state.redo);
   const canUndo = useBuilderStore(state => state.canUndo());
@@ -73,7 +128,14 @@ export function TopToolbar() {
 
   const handleExport = async () => {
     setIsExporting(true);
-    const exportData = { version: 1, themeColors, customCss, blocks };
+    const exportData = {
+      version: 1,
+      themeColors,
+      customCss,
+      pageSettings,
+      hasPage,
+      blocks,
+    };
     const [dataStr] = await Promise.all([
       Promise.resolve(JSON.stringify(exportData, null, 2)),
       new Promise(r => setTimeout(r, MIN_LOADING_MS)),
@@ -114,21 +176,21 @@ export function TopToolbar() {
         if (
           Array.isArray(parsed) &&
           parsed.every(
-            (item) =>
+            item =>
               item !== null &&
               typeof item === "object" &&
               typeof item.id === "string" &&
               typeof item.type === "string" &&
               item.data !== null &&
               typeof item.data === "object" &&
-              !Array.isArray(item.data)
+              !Array.isArray(item.data),
           )
         ) {
           isValidLegacy = true;
         } else if (
-          parsed && 
-          typeof parsed === "object" && 
-          parsed.version === 1 && 
+          parsed &&
+          typeof parsed === "object" &&
+          parsed.version === 1 &&
           Array.isArray(parsed.blocks)
         ) {
           isV1 = true;
@@ -147,6 +209,8 @@ export function TopToolbar() {
           setBlocks(parsed);
           setThemeColors(defaultColors);
           setCustomCss("");
+          setPageSettings(DEFAULT_PAGE_SETTINGS);
+          setHasPage(true);
           toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
         } else if (isV1) {
           selectBlock(null);
@@ -162,12 +226,15 @@ export function TopToolbar() {
           } else {
             setCustomCss("");
           }
+          setPageSettings(normalizePageSettings(parsed.pageSettings));
+          setHasPage(
+            typeof parsed.hasPage === "boolean" ? parsed.hasPage : true,
+          );
           toast.success("تم استيراد التصميم بنجاح.");
         } else {
           toast.error("الملف لا يحتوي على تصميم صالح.");
         }
-      } catch (error) {
-        console.error("Failed to parse JSON:", error);
+      } catch {
         toast.error("فشل في استيراد الملف. تأكد من أنه ملف JSON صالح.");
       } finally {
         setIsImporting(false);
@@ -179,25 +246,23 @@ export function TopToolbar() {
 
   return (
     <header className="h-14 border-b border-border-color bg-white flex items-center justify-between px-4 shrink-0">
-      {/* Right side (starts visually on the right in RTL) */}
       <div className="flex items-center gap-4">
         <button
+          type="button"
           className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
           aria-label="العودة">
           <ArrowRightIcon className="w-5 h-5" />
         </button>
         <div className="font-semibold text-lg flex items-center gap-2">
-          الرئيسية
+          {hasPage ? pageSettings.title : "الصفحات"}
           <span className="text-muted-foreground font-normal text-sm">/</span>
         </div>
       </div>
 
-      {/* Center */}
       <div className="hidden md:flex items-center">
         <DeviceToggle />
       </div>
 
-      {/* Left side */}
       <div className="flex items-center gap-2 sm:gap-3">
         <input
           type="file"
@@ -207,9 +272,9 @@ export function TopToolbar() {
           onChange={handleFileChange}
         />
 
-        {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-1 rtl:flex-row-reverse border-l border-border-color pl-3 ml-1">
           <button
+            type="button"
             onClick={undo}
             disabled={!canUndo}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -217,6 +282,7 @@ export function TopToolbar() {
             <ArrowUturnLeftIcon className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={redo}
             disabled={!canRedo}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -226,20 +292,28 @@ export function TopToolbar() {
         </div>
 
         <button
+          type="button"
           onClick={handleImportClick}
           disabled={isImporting}
           className="hidden sm:flex items-center gap-1.5 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:hover:bg-transparent"
           aria-label="استيراد"
           title="استيراد JSON">
-          {isImporting ? <Spinner /> : <ArrowDownTrayIcon className="w-4 h-4" />}
+          {isImporting ? (
+            <Spinner />
+          ) : (
+            <ArrowDownTrayIcon className="w-4 h-4" />
+          )}
         </button>
 
         <button
+          type="button"
           onClick={handleExport}
           disabled={isExporting}
           className={cn(
             "hidden sm:flex items-center gap-1.5 p-2 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent",
-            exportDone ? "text-green-500 bg-green-50" : "text-muted-foreground hover:text-foreground hover:bg-gray-100"
+            exportDone
+              ? "text-green-500 bg-green-50"
+              : "text-muted-foreground hover:text-foreground hover:bg-gray-100",
           )}
           aria-label="تصدير"
           title="تصدير JSON">
@@ -253,17 +327,12 @@ export function TopToolbar() {
         </button>
 
         <button
+          type="button"
           className="hidden sm:block p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
           aria-label="تغيير اللغة">
           <GlobeAltIcon className="w-4 h-4" />
         </button>
 
-        <button className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border-color bg-white hover:bg-gray-50 text-gray-700 transition-colors">
-          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-          <span className="hidden lg:inline">زيارة الموقع</span>
-        </button>
-
-        {/* Mobile Dropdown Menu */}
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -288,10 +357,16 @@ export function TopToolbar() {
                 <ArrowUpTrayIcon className="w-4 h-4" /> تصدير
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={undo} disabled={!canUndo}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={undo}
+                disabled={!canUndo}>
                 <ArrowUturnLeftIcon className="w-4 h-4" /> تراجع
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={redo} disabled={!canRedo}>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={redo}
+                disabled={!canRedo}>
                 <ArrowUturnRightIcon className="w-4 h-4" /> إعادة
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -323,7 +398,7 @@ export function TopToolbar() {
             "relative flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-accent-hover transition-colors shadow-sm",
             isDirty
               ? "bg-transparent text-accent border border-accent hover:text-white"
-              : "text-white bg-accent"
+              : "text-white bg-accent",
           )}>
           {isDirty && (
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-yellow-400 border-2 border-white rounded-full animate-pulse" />

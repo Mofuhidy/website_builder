@@ -18,10 +18,28 @@ export interface ThemeColors {
   muted: string;
 }
 
+export interface PageSettings {
+  title: string;
+  slug: string;
+  seoDescription: string;
+  showHeader: boolean;
+  showFooter: boolean;
+}
+
+export const DEFAULT_PAGE_SETTINGS: PageSettings = {
+  title: "الرئيسية",
+  slug: "home",
+  seoDescription: "",
+  showHeader: true,
+  showFooter: true,
+};
+
 export interface Snapshot {
   blocks: BuilderBlock[];
   themeColors: ThemeColors;
   customCss: string;
+  pageSettings: PageSettings;
+  hasPage: boolean;
 }
 
 interface BuilderState {
@@ -52,6 +70,12 @@ interface BuilderState {
   setThemeColors: (colors: ThemeColors) => void;
   customCss: string;
   setCustomCss: (css: string) => void;
+  pageSettings: PageSettings;
+  setPageSettings: (settings: PageSettings) => void;
+  hasPage: boolean;
+  setHasPage: (hasPage: boolean) => void;
+  createPage: () => void;
+  removePage: () => void;
 
   past: Snapshot[];
   future: Snapshot[];
@@ -61,12 +85,13 @@ interface BuilderState {
   canRedo: () => boolean;
 }
 
-// Helper to push history state before changes
 function pushSnapshot(state: BuilderState): Partial<BuilderState> {
   const snapshot: Snapshot = {
     blocks: state.blocks,
     themeColors: state.themeColors,
     customCss: state.customCss,
+    pageSettings: state.pageSettings,
+    hasPage: state.hasPage,
   };
   return {
     past: [...state.past, snapshot],
@@ -118,6 +143,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: state.blocks,
             themeColors: state.themeColors,
             customCss: state.customCss,
+            pageSettings: state.pageSettings,
+            hasPage: state.hasPage,
           };
           return {
             past: newPast,
@@ -125,6 +152,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: previous.blocks,
             themeColors: previous.themeColors,
             customCss: previous.customCss,
+            pageSettings: previous.pageSettings,
+            hasPage: previous.hasPage,
             isDirty: true,
           };
         }),
@@ -138,6 +167,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: state.blocks,
             themeColors: state.themeColors,
             customCss: state.customCss,
+            pageSettings: state.pageSettings,
+            hasPage: state.hasPage,
           };
           return {
             past: [...state.past, currentSnapshot],
@@ -145,6 +176,8 @@ export const useBuilderStore = create<BuilderState>()(
             blocks: next.blocks,
             themeColors: next.themeColors,
             customCss: next.customCss,
+            pageSettings: next.pageSettings,
+            hasPage: next.hasPage,
             isDirty: true,
           };
         }),
@@ -164,6 +197,31 @@ export const useBuilderStore = create<BuilderState>()(
         set((state) => ({
           ...pushSnapshot(state),
           themeColors: colors,
+        })),
+      pageSettings: DEFAULT_PAGE_SETTINGS,
+      setPageSettings: (settings) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          pageSettings: settings,
+        })),
+      hasPage: true,
+      setHasPage: (hasPage) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage,
+        })),
+      createPage: () =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage: true,
+          pageSettings: DEFAULT_PAGE_SETTINGS,
+        })),
+      removePage: () =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          hasPage: false,
+          selectedBlockId: null,
+          editingBlockId: null,
         })),
 
       addBlock: (block) =>
@@ -242,6 +300,8 @@ export const useBuilderStore = create<BuilderState>()(
         activeTab: state.activeTab,
         themeColors: state.themeColors,
         customCss: state.customCss,
+        pageSettings: state.pageSettings,
+        hasPage: state.hasPage,
         editingBlockId: state.editingBlockId,
       }),
     },
