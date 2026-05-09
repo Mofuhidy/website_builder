@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { JsonValue, SectionType } from "@/lib/section-registry";
-import { normalizeFontFamily, normalizePageSettings } from "@/lib/builder-utils";
+import {
+  normalizeCustomCss,
+  normalizeFontFamily,
+  normalizeImportedBlocks,
+  normalizePageSettings,
+} from "@/lib/builder-utils";
 
 export type TabType = "pages" | "fonts" | "colors" | "css" | "sections";
 export type DeviceMode = "desktop" | "tablet" | "mobile";
@@ -76,6 +81,7 @@ interface BuilderState {
   setThemeColors: (colors: ThemeColors) => void;
   customCss: string;
   setCustomCss: (css: string) => void;
+  applyImportedState: (payload: Snapshot) => void;
   pageSettings: PageSettings;
   setPageSettings: (settings: PageSettings) => void;
   setPageVisibility: (visibility: Pick<PageSettings, "showHeader" | "showFooter">) => void;
@@ -132,7 +138,20 @@ export const useBuilderStore = create<BuilderState>()(
       setCustomCss: (css) =>
         set((state) => ({
           ...pushSnapshot(state),
-          customCss: css,
+          customCss: normalizeCustomCss(css),
+        })),
+      applyImportedState: (payload) =>
+        set((state) => ({
+          ...pushSnapshot(state),
+          blocks: payload.blocks,
+          themeColors: payload.themeColors,
+          customCss: payload.customCss,
+          pageSettings: payload.pageSettings,
+          hasPage: payload.hasPage,
+          fontFamily: payload.fontFamily,
+          selectedBlockId: null,
+          editingBlockId: null,
+          lastAddedBlockId: null,
         })),
 
       past: [],
@@ -347,6 +366,8 @@ export const useBuilderStore = create<BuilderState>()(
         return {
           ...current,
           ...persistedState,
+          blocks: normalizeImportedBlocks(persistedState.blocks).blocks,
+          customCss: normalizeCustomCss(persistedState.customCss),
           pageSettings: normalizePageSettings(persistedState.pageSettings),
           hasPage:
             typeof persistedState.hasPage === "boolean"

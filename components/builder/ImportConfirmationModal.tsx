@@ -7,6 +7,7 @@ interface ImportConfirmationModalProps {
   open: boolean;
   title: string;
   description: string;
+  notice?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -15,6 +16,7 @@ export function ImportConfirmationModal({
   open,
   title,
   description,
+  notice,
   onCancel,
   onConfirm,
 }: ImportConfirmationModalProps) {
@@ -73,6 +75,11 @@ export function ImportConfirmationModal({
         <p id={descriptionId} className="mt-2 text-sm leading-6 text-muted-foreground">
           {description}
         </p>
+        {notice && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+            {notice}
+          </div>
+        )}
 
         <div className="mt-7 flex justify-end gap-3">
           <button

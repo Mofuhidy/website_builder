@@ -17,10 +17,10 @@ export function BuilderShell() {
   const undo = useBuilderStore(s => s.undo);
   const redo = useBuilderStore(s => s.redo);
 
-  useHotkeys("cmd+z", () => undo(), [undo]);
-  useHotkeys("ctrl+z", () => undo(), [undo]);
-  useHotkeys("cmd+shift+z", () => redo(), [redo]);
-  useHotkeys("ctrl+shift+z", () => redo(), [redo]);
+  useHotkeys("cmd+z", undo);
+  useHotkeys("ctrl+z", undo);
+  useHotkeys("cmd+shift+z", redo);
+  useHotkeys("ctrl+shift+z", redo);
 
   const startResizing = useCallback(() => {
     isResizing.current = true;

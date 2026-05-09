@@ -1,7 +1,8 @@
 "use client";
 
+import React, { useMemo } from "react";
 import { BuilderBlock } from "@/store/builder-store";
-import { CATEGORY_REGISTRY } from "@/lib/section-registry";
+import { findSectionRegistryItem, type JsonValue } from "@/lib/section-registry";
 import { HeaderSection } from "./HeaderSection";
 import { HeroSection } from "./HeroSection";
 import { ServicesSection } from "./ServicesSection";
@@ -18,7 +19,7 @@ interface SectionRendererProps {
   block: BuilderBlock;
 }
 
-const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
+const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: Record<string, JsonValue> }>> = {
   header: HeaderSection,
   hero: HeroSection,
   services: ServicesSection,
@@ -32,18 +33,13 @@ const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
   testimonials: TestimonialsSection,
 };
 
-function getDefaultData(type: string) {
-  for (const category of CATEGORY_REGISTRY) {
-    for (const item of category.items) {
-      if (item.id === type) return item.defaultData;
-    }
-  }
-  return {};
-}
-
-export function SectionRenderer({ block }: SectionRendererProps) {
-  const defaults = getDefaultData(block.type);
-  const data = { ...defaults, ...block.data };
+export const SectionRenderer = React.memo(function SectionRenderer({
+  block,
+}: SectionRendererProps) {
+  const data = useMemo(() => {
+    const defaults = findSectionRegistryItem(block.type)?.defaultData ?? {};
+    return { ...defaults, ...block.data };
+  }, [block.type, block.data]);
 
   const Component = SECTION_COMPONENTS[block.type];
 
@@ -57,4 +53,4 @@ export function SectionRenderer({ block }: SectionRendererProps) {
       <p className="text-sm">هذا المكون تحت التطوير حالياً.</p>
     </div>
   );
-}
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -13,6 +13,7 @@ import {
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { DocumentMinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { type FontFamily, useBuilderStore } from "@/store/builder-store";
+import { scopePreviewCss } from "@/lib/builder-utils";
 import { cn } from "@/lib/cn";
 import { SortableBlock } from "./SortableBlock";
 
@@ -36,6 +37,7 @@ export function PreviewCanvas() {
   const hasPage = useBuilderStore((s) => s.hasPage);
   const createPage = useBuilderStore((s) => s.createPage);
   const fontFamily = useBuilderStore((s) => s.fontFamily);
+  const scopedCustomCss = useMemo(() => scopePreviewCss(customCss), [customCss]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -65,12 +67,20 @@ export function PreviewCanvas() {
     selectBlock(null);
   };
 
-  const draggedBlock = activeId ? blocks.find((b) => b.id === activeId) : null;
-  const visibleBlocks = blocks.filter((block) => {
-    if (block.type === "header") return pageSettings.showHeader !== false;
-    if (block.type === "footer") return pageSettings.showFooter !== false;
-    return true;
-  });
+  const draggedBlock = useMemo(
+    () => (activeId ? blocks.find((b) => b.id === activeId) : null),
+    [activeId, blocks],
+  );
+
+  const visibleBlocks = useMemo(
+    () =>
+      blocks.filter((block) => {
+        if (block.type === "header") return pageSettings.showHeader !== false;
+        if (block.type === "footer") return pageSettings.showFooter !== false;
+        return true;
+      }),
+    [blocks, pageSettings.showHeader, pageSettings.showFooter],
+  );
 
   return (
     <DndContext
@@ -84,6 +94,7 @@ export function PreviewCanvas() {
         onClick={handleBackgroundClick}
       >
         <div
+          data-preview-canvas=""
           className={cn(
             "@container bg-background text-foreground min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",
             deviceMode === "desktop" && "w-full max-w-5xl",
@@ -102,7 +113,7 @@ export function PreviewCanvas() {
             } as React.CSSProperties
           }
         >
-          {customCss && <style>{customCss}</style>}
+          {scopedCustomCss && <style>{scopedCustomCss}</style>}
           {!hasPage ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <DocumentMinusIcon className="mb-5 h-14 w-14 text-gray-400" />
