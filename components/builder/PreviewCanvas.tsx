@@ -12,9 +12,16 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { DocumentMinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useBuilderStore } from "@/store/builder-store";
+import { type FontFamily, useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
 import { SortableBlock } from "./SortableBlock";
+
+const PREVIEW_FONT_FAMILIES: Record<FontFamily, string> = {
+  system: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  cairo: "'Cairo', system-ui, sans-serif",
+  tajawal: "'Tajawal', system-ui, sans-serif",
+  almarai: "'Almarai', system-ui, sans-serif",
+};
 
 export function PreviewCanvas() {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -28,6 +35,7 @@ export function PreviewCanvas() {
   const pageSettings = useBuilderStore((s) => s.pageSettings);
   const hasPage = useBuilderStore((s) => s.hasPage);
   const createPage = useBuilderStore((s) => s.createPage);
+  const fontFamily = useBuilderStore((s) => s.fontFamily);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -90,6 +98,7 @@ export function PreviewCanvas() {
               "--foreground": themeColors.foreground,
               "--muted": themeColors.muted,
               "--accent": themeColors.accent,
+              fontFamily: PREVIEW_FONT_FAMILIES[fontFamily],
             } as React.CSSProperties
           }
         >

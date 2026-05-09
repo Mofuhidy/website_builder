@@ -1,7 +1,6 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
 import {
   RocketLaunchIcon,
@@ -11,8 +10,6 @@ import {
   HeartIcon,
   TrophyIcon,
 } from "@heroicons/react/24/outline";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 const ICON_POOL = [RocketLaunchIcon, ShieldCheckIcon, StarIcon, BoltIcon, HeartIcon, TrophyIcon];
 
@@ -30,7 +27,7 @@ export const FeaturesSection = memo(function FeaturesSection({ data }: FeaturesS
   const items = (data.items as unknown as FeatureItem[]) || [];
 
   return (
-    <section className={`py-20 px-6 bg-muted ${cairo.className}`} dir="rtl">
+    <section className="py-20 px-6 bg-muted" dir="rtl">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl @md:text-4xl font-bold text-foreground mb-4">{title}</h2>

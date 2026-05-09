@@ -1,10 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 interface HeroSectionProps {
   data: Record<string, JsonValue>;
@@ -18,7 +15,7 @@ export const HeroSection = memo(function HeroSection({ data }: HeroSectionProps)
 
   return (
     <section
-      className={`relative py-20 px-6 overflow-hidden bg-background ${cairo.className}`}
+      className="relative py-20 px-6 overflow-hidden bg-background"
       dir="rtl"
     >
       <div className="max-w-6xl mx-auto text-center relative z-10">

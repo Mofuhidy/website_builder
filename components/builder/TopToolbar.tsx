@@ -1,6 +1,7 @@
 "use client";
 
 import { DeviceToggle } from "./DeviceToggle";
+import { ImportConfirmationModal } from "./ImportConfirmationModal";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -26,8 +27,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   DEFAULT_PAGE_SETTINGS,
+  normalizeFontFamily,
   useBuilderStore,
+  type BuilderBlock,
+  type FontFamily,
   type PageSettings,
+  type ThemeColors,
 } from "@/store/builder-store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -99,6 +104,88 @@ function normalizePageSettings(value: unknown): PageSettings {
   };
 }
 
+const DEFAULT_THEME_COLORS: ThemeColors = {
+  accent: "#f05151",
+  background: "#ffffff",
+  foreground: "#111827",
+  muted: "#f9fafb",
+};
+
+interface PendingImport {
+  blocks: BuilderBlock[];
+  themeColors: ThemeColors;
+  customCss: string;
+  pageSettings: PageSettings;
+  hasPage: boolean;
+  fontFamily: FontFamily;
+  successMessage: string;
+}
+
+function isImportBlock(value: unknown): value is BuilderBlock {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.type === "string" &&
+    isRecord(value.data)
+  );
+}
+
+function normalizeThemeColors(value: unknown): ThemeColors {
+  if (!isRecord(value)) return DEFAULT_THEME_COLORS;
+
+  return {
+    accent:
+      typeof value.accent === "string"
+        ? value.accent
+        : DEFAULT_THEME_COLORS.accent,
+    background:
+      typeof value.background === "string"
+        ? value.background
+        : DEFAULT_THEME_COLORS.background,
+    foreground:
+      typeof value.foreground === "string"
+        ? value.foreground
+        : DEFAULT_THEME_COLORS.foreground,
+    muted:
+      typeof value.muted === "string"
+        ? value.muted
+        : DEFAULT_THEME_COLORS.muted,
+  };
+}
+
+function createPendingImport(parsed: unknown): PendingImport | null {
+  if (Array.isArray(parsed) && parsed.every(isImportBlock)) {
+    return {
+      blocks: parsed,
+      themeColors: DEFAULT_THEME_COLORS,
+      customCss: "",
+      pageSettings: DEFAULT_PAGE_SETTINGS,
+      hasPage: true,
+      fontFamily: "system",
+      successMessage: "تم استيراد التصميم بنجاح (الإصدار القديم).",
+    };
+  }
+
+  if (
+    isRecord(parsed) &&
+    parsed.version === 1 &&
+    Array.isArray(parsed.blocks) &&
+    parsed.blocks.every(isImportBlock)
+  ) {
+    return {
+      blocks: parsed.blocks,
+      themeColors: normalizeThemeColors(parsed.themeColors),
+      customCss: typeof parsed.customCss === "string" ? parsed.customCss : "",
+      pageSettings: normalizePageSettings(parsed.pageSettings),
+      hasPage: typeof parsed.hasPage === "boolean" ? parsed.hasPage : true,
+      fontFamily: normalizeFontFamily(parsed.fontFamily),
+      successMessage: "تم استيراد التصميم بنجاح.",
+    };
+  }
+
+  return null;
+}
+
 export function TopToolbar() {
   const setDeviceMode = useBuilderStore(state => state.setDeviceMode);
   const blocks = useBuilderStore(state => state.blocks);
@@ -113,6 +200,8 @@ export function TopToolbar() {
   const setPageSettings = useBuilderStore(state => state.setPageSettings);
   const hasPage = useBuilderStore(state => state.hasPage);
   const setHasPage = useBuilderStore(state => state.setHasPage);
+  const fontFamily = useBuilderStore(state => state.fontFamily);
+  const setFontFamily = useBuilderStore(state => state.setFontFamily);
   const undo = useBuilderStore(state => state.undo);
   const redo = useBuilderStore(state => state.redo);
   const canUndo = useBuilderStore(state => state.canUndo());
@@ -123,6 +212,7 @@ export function TopToolbar() {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [exportDone, setExportDone] = useState(false);
+  const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
 
   const MIN_LOADING_MS = 900;
 
@@ -134,6 +224,7 @@ export function TopToolbar() {
       customCss,
       pageSettings,
       hasPage,
+      fontFamily,
       blocks,
     };
     const [dataStr] = await Promise.all([
@@ -170,70 +261,14 @@ export function TopToolbar() {
         const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
         if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
 
-        let isValidLegacy = false;
-        let isV1 = false;
+        const nextImport = createPendingImport(parsed);
 
-        if (
-          Array.isArray(parsed) &&
-          parsed.every(
-            item =>
-              item !== null &&
-              typeof item === "object" &&
-              typeof item.id === "string" &&
-              typeof item.type === "string" &&
-              item.data !== null &&
-              typeof item.data === "object" &&
-              !Array.isArray(item.data),
-          )
-        ) {
-          isValidLegacy = true;
-        } else if (
-          parsed &&
-          typeof parsed === "object" &&
-          parsed.version === 1 &&
-          Array.isArray(parsed.blocks)
-        ) {
-          isV1 = true;
-        }
-
-        const defaultColors = {
-          accent: "#f05151",
-          background: "#ffffff",
-          foreground: "#111827",
-          muted: "#f9fafb",
-        };
-
-        if (isValidLegacy) {
-          selectBlock(null);
-          setEditingBlock(null);
-          setBlocks(parsed);
-          setThemeColors(defaultColors);
-          setCustomCss("");
-          setPageSettings(DEFAULT_PAGE_SETTINGS);
-          setHasPage(true);
-          toast.success("تم استيراد التصميم بنجاح (الإصدار القديم).");
-        } else if (isV1) {
-          selectBlock(null);
-          setEditingBlock(null);
-          setBlocks(parsed.blocks);
-          if (parsed.themeColors) {
-            setThemeColors({ ...defaultColors, ...parsed.themeColors });
-          } else {
-            setThemeColors(defaultColors);
-          }
-          if (typeof parsed.customCss === "string") {
-            setCustomCss(parsed.customCss);
-          } else {
-            setCustomCss("");
-          }
-          setPageSettings(normalizePageSettings(parsed.pageSettings));
-          setHasPage(
-            typeof parsed.hasPage === "boolean" ? parsed.hasPage : true,
-          );
-          toast.success("تم استيراد التصميم بنجاح.");
-        } else {
+        if (!nextImport) {
           toast.error("الملف لا يحتوي على تصميم صالح.");
+          return;
         }
+
+        setPendingImport(nextImport);
       } catch {
         toast.error("فشل في استيراد الملف. تأكد من أنه ملف JSON صالح.");
       } finally {
@@ -244,7 +279,23 @@ export function TopToolbar() {
     reader.readAsText(file);
   };
 
+  const applyPendingImport = () => {
+    if (!pendingImport) return;
+
+    selectBlock(null);
+    setEditingBlock(null);
+    setBlocks(pendingImport.blocks);
+    setThemeColors(pendingImport.themeColors);
+    setCustomCss(pendingImport.customCss);
+    setPageSettings(pendingImport.pageSettings);
+    setHasPage(pendingImport.hasPage);
+    setFontFamily(pendingImport.fontFamily);
+    toast.success(pendingImport.successMessage);
+    setPendingImport(null);
+  };
+
   return (
+    <>
     <header className="h-14 border-b border-border-color bg-white flex items-center justify-between px-4 shrink-0">
       <div className="flex items-center gap-4">
         <button
@@ -326,13 +377,6 @@ export function TopToolbar() {
           )}
         </button>
 
-        <button
-          type="button"
-          className="hidden sm:block p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
-          aria-label="تغيير اللغة">
-          <GlobeAltIcon className="w-4 h-4" />
-        </button>
-
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -408,5 +452,13 @@ export function TopToolbar() {
         </button>
       </div>
     </header>
+    <ImportConfirmationModal
+      open={pendingImport !== null}
+      title="تأكيد استيراد التصميم"
+      description="سيتم استبدال التصميم الحالي بالكامل، بما في ذلك الأقسام والألوان وإعدادات الصفحة والخطوط. لا يمكن التراجع عن الاستبدال إلا باستخدام التراجع إذا كان متاحًا."
+      onCancel={() => setPendingImport(null)}
+      onConfirm={applyPendingImport}
+    />
+    </>
   );
 }

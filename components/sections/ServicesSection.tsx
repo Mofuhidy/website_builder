@@ -1,7 +1,6 @@
 "use client";
 
 import { memo } from "react";
-import { Cairo } from "next/font/google";
 import { JsonValue } from "@/lib/section-registry";
 import {
   CloudArrowUpIcon,
@@ -11,8 +10,6 @@ import {
   SparklesIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 const ICON_POOL = [CloudArrowUpIcon, LockClosedIcon, ArrowPathIcon, FingerPrintIcon, SparklesIcon, GlobeAltIcon];
 
@@ -30,7 +27,7 @@ export const ServicesSection = memo(function ServicesSection({ data }: ServicesS
   const items = (data.items as unknown as ServiceItem[]) || [];
 
   return (
-    <section className={`py-24 bg-background ${cairo.className}`} dir="rtl">
+    <section className="py-24 bg-background" dir="rtl">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl @md:text-4xl font-extrabold text-foreground mb-4">{title}</h2>

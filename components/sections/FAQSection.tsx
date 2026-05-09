@@ -1,11 +1,8 @@
 "use client";
 import { memo, useState } from "react";
-import { Cairo } from "next/font/google";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { JsonValue } from "@/lib/section-registry";
 import { motion, AnimatePresence } from "framer-motion";
-
-const cairo = Cairo({ subsets: ["arabic"] });
 
 interface FAQSectionProps {
   data: Record<string, JsonValue>;
@@ -17,7 +14,7 @@ export const FAQSection = memo(function FAQSection({ data }: FAQSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className={`py-20 px-6 bg-background ${cairo.className}`} dir="rtl">
+    <section className="py-20 px-6 bg-background" dir="rtl">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl @md:text-4xl font-bold text-foreground mb-4">{title}</h2>
