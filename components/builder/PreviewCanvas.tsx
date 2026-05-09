@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -28,6 +28,8 @@ const PREVIEW_FONT_FAMILIES: Record<FontFamily, string> = {
 export function PreviewCanvas() {
   useRenderCount("PreviewCanvas");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const previewSurfaceRef = useRef<HTMLDivElement>(null);
 
   const deviceMode = useBuilderStore((s) => s.deviceMode);
   const blocks = useBuilderStore((s) => s.blocks);
@@ -37,6 +39,7 @@ export function PreviewCanvas() {
   const customCss = useBuilderStore((s) => s.customCss);
   const pageSettings = useBuilderStore((s) => s.pageSettings);
   const hasPage = useBuilderStore((s) => s.hasPage);
+  const previewResetKey = useBuilderStore((s) => s.previewResetKey);
   const createPage = useBuilderStore((s) => s.createPage);
   const fontFamily = useBuilderStore((s) => s.fontFamily);
   const scopedCustomCss = useMemo(() => scopePreviewCss(customCss), [customCss]);
@@ -84,6 +87,21 @@ export function PreviewCanvas() {
     [blocks, pageSettings.showHeader, pageSettings.showFooter],
   );
 
+  useEffect(() => {
+    const resetToTop = () => {
+      scrollContainerRef.current?.scrollTo({ top: 0, behavior: "auto" });
+      previewSurfaceRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    };
+
+    resetToTop();
+    const frame = window.requestAnimationFrame(resetToTop);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [previewResetKey]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -92,10 +110,13 @@ export function PreviewCanvas() {
       onDragCancel={() => setActiveId(null)}
     >
       <div
+        key={previewResetKey}
+        ref={scrollContainerRef}
         className="flex-1 overflow-auto p-4 md:p-8 flex justify-center items-start"
         onClick={handleBackgroundClick}
       >
         <div
+          ref={previewSurfaceRef}
           data-preview-canvas=""
           className={cn(
             "@container bg-background text-foreground min-h-[800px] shadow-sm border flex flex-col transition-all duration-300 rounded-lg overflow-visible",

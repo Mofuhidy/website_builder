@@ -1,4 +1,5 @@
 import {
+  DEFAULT_THEME_COLORS,
   DEFAULT_FONT_FAMILY,
   DEFAULT_PAGE_SETTINGS,
   type BuilderBlock,
@@ -14,13 +15,6 @@ import {
   findSectionRegistryItem,
   isSectionType,
 } from "@/lib/section-registry";
-
-const DEFAULT_THEME_COLORS: ThemeColors = {
-  accent: "#f05151",
-  background: "#ffffff",
-  foreground: "#111827",
-  muted: "#f9fafb",
-};
 
 const SUPPORTED_FONT_FAMILIES: FontFamily[] = ["system", "cairo", "tajawal", "almarai"];
 const MAX_CUSTOM_CSS_LENGTH = 12000;

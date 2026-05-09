@@ -25,6 +25,13 @@ export interface ThemeColors {
   muted: string;
 }
 
+export const DEFAULT_THEME_COLORS: ThemeColors = {
+  accent: "#f05151",
+  background: "#ffffff",
+  foreground: "#111827",
+  muted: "#f9fafb",
+};
+
 export interface PageSettings {
   title: string;
   slug: string;
@@ -91,6 +98,7 @@ interface BuilderState {
   setHasPage: (hasPage: boolean) => void;
   createPage: () => void;
   removePage: () => void;
+  previewResetKey: number;
   sidebarWidth: number;
   setSidebarWidth: (width: number) => void;
 
@@ -100,6 +108,13 @@ interface BuilderState {
   redo: () => void;
   canUndo: () => boolean;
   canRedo: () => boolean;
+}
+
+function keepBlockSelection(
+  blockId: string | null,
+  blocks: BuilderBlock[],
+) {
+  return blockId !== null && blocks.some((block) => block.id === blockId) ? blockId : null;
 }
 
 function pushSnapshot(state: BuilderState): Partial<BuilderState> {
@@ -152,6 +167,7 @@ export const useBuilderStore = create<BuilderState>()(
           selectedBlockId: null,
           editingBlockId: null,
           lastAddedBlockId: null,
+          previewResetKey: state.previewResetKey + 1,
         })),
 
       past: [],
@@ -187,6 +203,9 @@ export const useBuilderStore = create<BuilderState>()(
             pageSettings: previous.pageSettings,
             hasPage: previous.hasPage,
             fontFamily: previous.fontFamily,
+            selectedBlockId: keepBlockSelection(state.selectedBlockId, previous.blocks),
+            editingBlockId: keepBlockSelection(state.editingBlockId, previous.blocks),
+            lastAddedBlockId: null,
             isDirty: true,
           };
         }),
@@ -213,16 +232,14 @@ export const useBuilderStore = create<BuilderState>()(
             pageSettings: next.pageSettings,
             hasPage: next.hasPage,
             fontFamily: next.fontFamily,
+            selectedBlockId: keepBlockSelection(state.selectedBlockId, next.blocks),
+            editingBlockId: keepBlockSelection(state.editingBlockId, next.blocks),
+            lastAddedBlockId: null,
             isDirty: true,
           };
         }),
 
-      themeColors: {
-        accent: "#f05151",
-        background: "#ffffff",
-        foreground: "#111827",
-        muted: "#f9fafb",
-      },
+      themeColors: DEFAULT_THEME_COLORS,
       setThemeColor: (key, value) =>
         set((state) => ({
           ...pushSnapshot(state),
@@ -259,11 +276,20 @@ export const useBuilderStore = create<BuilderState>()(
           ...pushSnapshot(state),
           hasPage,
         })),
+      previewResetKey: 0,
       createPage: () =>
         set((state) => ({
           ...pushSnapshot(state),
+          blocks: [],
+          themeColors: DEFAULT_THEME_COLORS,
+          customCss: "",
+          fontFamily: DEFAULT_FONT_FAMILY,
           hasPage: true,
           pageSettings: DEFAULT_PAGE_SETTINGS,
+          selectedBlockId: null,
+          editingBlockId: null,
+          lastAddedBlockId: null,
+          previewResetKey: state.previewResetKey + 1,
         })),
       removePage: () =>
         set((state) => ({
@@ -271,6 +297,8 @@ export const useBuilderStore = create<BuilderState>()(
           hasPage: false,
           selectedBlockId: null,
           editingBlockId: null,
+          lastAddedBlockId: null,
+          previewResetKey: state.previewResetKey + 1,
         })),
       sidebarWidth: 320,
       setSidebarWidth: (width) => set({ sidebarWidth: width }),

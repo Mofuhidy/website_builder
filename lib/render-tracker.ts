@@ -12,6 +12,8 @@
  */
 import { useRef, useEffect } from "react";
 
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
+
 function shallowEqual(a: Record<string, unknown>, b: Record<string, unknown>) {
   const keysA = Object.keys(a);
   const keysB = Object.keys(b);
@@ -41,11 +43,27 @@ export function useRenderTracker(
   const renderCount = useRef(0);
   const prevProps = useRef<Record<string, unknown> | null>(null);
   const hasWarned = useRef(false);
-
-  renderCount.current += 1;
-  const count = renderCount.current;
+  const isArmed = useRef(false);
 
   useEffect(() => {
+    if (!IS_DEVELOPMENT) {
+      return;
+    }
+
+    renderCount.current += 1;
+    const count = renderCount.current;
+
+    if (!isArmed.current) {
+      prevProps.current = { ...props };
+      const armTimer = window.setTimeout(() => {
+        isArmed.current = true;
+      }, 0);
+
+      return () => {
+        window.clearTimeout(armTimer);
+      };
+    }
+
     if (prevProps.current === null) {
       prevProps.current = { ...props };
       return;
@@ -101,11 +119,26 @@ export function useRenderTracker(
  */
 export function useRenderCount(componentName: string) {
   const renderCount = useRef(0);
-
-  renderCount.current += 1;
-  const count = renderCount.current;
+  const isArmed = useRef(false);
 
   useEffect(() => {
+    if (!IS_DEVELOPMENT) {
+      return;
+    }
+
+    renderCount.current += 1;
+    const count = renderCount.current;
+
+    if (!isArmed.current) {
+      const armTimer = window.setTimeout(() => {
+        isArmed.current = true;
+      }, 0);
+
+      return () => {
+        window.clearTimeout(armTimer);
+      };
+    }
+
     console.log(`[RenderTracker] ℹ️  ${componentName} rendered #${count}`);
   });
 }
