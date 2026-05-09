@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BuilderBlock, useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/cn";
+import { useRenderTracker } from "@/lib/render-tracker";
 import { SectionRenderer } from "../sections/SectionRenderer";
 import { FloatingSectionToolbar } from "./FloatingSectionToolbar";
 
@@ -14,11 +15,18 @@ interface SortableBlockProps {
   totalBlocks: number;
 }
 
-export function SortableBlock({
+export const SortableBlock = React.memo(function SortableBlock({
   block,
   index,
   totalBlocks,
 }: SortableBlockProps) {
+  useRenderTracker("SortableBlock", {
+    blockRef: block,
+    index,
+    totalBlocks,
+    id: block.id,
+    type: block.type,
+  });
   const isSelected = useBuilderStore(s => s.selectedBlockId === block.id);
   const isNew = useBuilderStore(s => s.lastAddedBlockId === block.id);
   const selectBlock = useBuilderStore(s => s.selectBlock);
@@ -101,4 +109,4 @@ export function SortableBlock({
       <SectionRenderer block={block} />
     </div>
   );
-}
+});

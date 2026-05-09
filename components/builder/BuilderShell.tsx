@@ -7,8 +7,10 @@ import { PreviewCanvas } from "./PreviewCanvas";
 import { useBuilderStore } from "@/store/builder-store";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useRenderCount } from "@/lib/render-tracker";
 
 export function BuilderShell() {
+  useRenderCount("BuilderShell");
   const sidebarWidth = useBuilderStore(s => s.sidebarWidth);
   const setSidebarWidth = useBuilderStore(s => s.setSidebarWidth);
   const isResizing = useRef(false);

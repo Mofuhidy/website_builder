@@ -345,9 +345,77 @@ function scopeSingleSelector(selector: string, scopeSelector: string) {
   return `${scopeSelector} ${trimmedSelector}`;
 }
 
+function splitTopLevelSelectors(selectors: string) {
+  const parts: string[] = [];
+  let current = "";
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let stringChar: '"' | "'" | null = null;
+
+  for (let index = 0; index < selectors.length; index += 1) {
+    const char = selectors[index];
+
+    if (stringChar) {
+      current += char;
+      if (char === "\\") {
+        index += 1;
+        current += selectors[index] ?? "";
+        continue;
+      }
+      if (char === stringChar) {
+        stringChar = null;
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      stringChar = char;
+      current += char;
+      continue;
+    }
+
+    if (char === "(") {
+      parenDepth += 1;
+      current += char;
+      continue;
+    }
+
+    if (char === ")") {
+      parenDepth = Math.max(0, parenDepth - 1);
+      current += char;
+      continue;
+    }
+
+    if (char === "[") {
+      bracketDepth += 1;
+      current += char;
+      continue;
+    }
+
+    if (char === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+      current += char;
+      continue;
+    }
+
+    if (char === "," && parenDepth === 0 && bracketDepth === 0) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current.length > 0) {
+    parts.push(current);
+  }
+
+  return parts;
+}
+
 function scopeSelectorList(selectors: string, scopeSelector: string) {
-  return selectors
-    .split(",")
+  return splitTopLevelSelectors(selectors)
     .map((selector) => scopeSingleSelector(selector, scopeSelector))
     .join(", ");
 }

@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useBuilderStore } from "@/store/builder-store";
+import { useRenderCount } from "@/lib/render-tracker";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
 import { SectionLibraryCard } from "./SectionLibraryCard";
 import {
@@ -37,6 +38,7 @@ function PanelSkeleton() {
 }
 
 export function InspectorPanel() {
+  useRenderCount("InspectorPanel");
   const activeTab = useBuilderStore((s) => s.activeTab);
   const editingBlockId = useBuilderStore((s) => s.editingBlockId);
   const setEditingBlock = useBuilderStore((s) => s.setEditingBlock);

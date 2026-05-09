@@ -1,10 +1,11 @@
 "use client";
 
+import React from "react";
 import { useBuilderStore } from "@/store/builder-store";
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/cn";
 
-export function DeviceToggle() {
+export const DeviceToggle = React.memo(function DeviceToggle() {
   const deviceMode = useBuilderStore((state) => state.deviceMode);
   const setDeviceMode = useBuilderStore((state) => state.setDeviceMode);
 
@@ -47,4 +48,4 @@ export function DeviceToggle() {
       </button>
     </div>
   );
-}
+});

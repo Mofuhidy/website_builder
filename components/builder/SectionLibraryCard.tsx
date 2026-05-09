@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useBuilderStore } from "@/store/builder-store";
 import { SectionRegistryItem } from "@/lib/section-registry";
 
@@ -7,7 +8,7 @@ interface SectionLibraryCardProps {
   section: SectionRegistryItem;
 }
 
-export function SectionLibraryCard({ section }: SectionLibraryCardProps) {
+export const SectionLibraryCard = React.memo(function SectionLibraryCard({ section }: SectionLibraryCardProps) {
   const addBlock = useBuilderStore((s) => s.addBlock);
 
   const handleClick = () => {
@@ -34,4 +35,4 @@ export function SectionLibraryCard({ section }: SectionLibraryCardProps) {
       <span className="font-medium text-sm flex-1">{section.name}</span>
     </button>
   );
-}
+});

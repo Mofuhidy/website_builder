@@ -3,6 +3,7 @@
 import React, { Suspense, useMemo } from "react";
 import { BuilderBlock } from "@/store/builder-store";
 import { CATEGORY_REGISTRY } from "@/lib/section-registry";
+import { useRenderTracker } from "@/lib/render-tracker";
 import {
   LazyHeaderSection,
   LazyHeroSection,
@@ -21,7 +22,10 @@ interface SectionRendererProps {
   block: BuilderBlock;
 }
 
-const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
+const SECTION_COMPONENTS: Record<
+  string,
+  React.ComponentType<{ data: BuilderBlock["data"] }>
+> = {
   header: LazyHeaderSection,
   hero: LazyHeroSection,
   services: LazyServicesSection,
@@ -55,6 +59,7 @@ function getDefaultData(type: string) {
 export const SectionRenderer = React.memo(function SectionRenderer({
   block,
 }: SectionRendererProps) {
+  useRenderTracker("SectionRenderer", { type: block.type, id: block.id });
   const data = useMemo(() => {
     const defaults = getDefaultData(block.type);
     return { ...defaults, ...block.data };

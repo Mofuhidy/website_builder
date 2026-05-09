@@ -15,6 +15,7 @@ import { DocumentMinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { type FontFamily, useBuilderStore } from "@/store/builder-store";
 import { scopePreviewCss } from "@/lib/builder-utils";
 import { cn } from "@/lib/cn";
+import { useRenderCount } from "@/lib/render-tracker";
 import { SortableBlock } from "./SortableBlock";
 
 const PREVIEW_FONT_FAMILIES: Record<FontFamily, string> = {
@@ -25,6 +26,7 @@ const PREVIEW_FONT_FAMILIES: Record<FontFamily, string> = {
 };
 
 export function PreviewCanvas() {
+  useRenderCount("PreviewCanvas");
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const deviceMode = useBuilderStore((s) => s.deviceMode);

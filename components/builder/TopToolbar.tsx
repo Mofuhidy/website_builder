@@ -26,6 +26,7 @@ import { createPendingImport, type PendingImport } from "@/lib/builder-utils";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
+import { useRenderCount } from "@/lib/render-tracker";
 import { DeviceToggle } from "./DeviceToggle";
 import { ImportConfirmationModal } from "./ImportConfirmationModal";
 
@@ -168,6 +169,7 @@ function MobileMenu({
 /* ────────────────────────────────────────────────────────────── */
 
 export function TopToolbar() {
+  useRenderCount("TopToolbar");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);

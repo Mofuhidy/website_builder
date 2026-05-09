@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cairo, Tajawal, Almarai } from "next/font/google";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
+import { WdyrInit } from "@/components/WdyrInit";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -48,6 +49,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
+        <WdyrInit />
         {children}
         <Toaster position="bottom-center" richColors dir="rtl" />
       </body>
