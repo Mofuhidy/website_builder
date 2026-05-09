@@ -127,6 +127,8 @@ interface BuilderState {
   setHasPage: (hasPage: boolean) => void;
   createPage: () => void;
   removePage: () => void;
+  sidebarWidth: number;
+  setSidebarWidth: (width: number) => void;
 
   past: Snapshot[];
   future: Snapshot[];
@@ -293,6 +295,8 @@ export const useBuilderStore = create<BuilderState>()(
           selectedBlockId: null,
           editingBlockId: null,
         })),
+      sidebarWidth: 320,
+      setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
       addBlock: (block) =>
         set((state) => ({ ...pushSnapshot(state), blocks: [...state.blocks, block], lastAddedBlockId: block.id })),
@@ -374,6 +378,7 @@ export const useBuilderStore = create<BuilderState>()(
         hasPage: state.hasPage,
         fontFamily: state.fontFamily,
         editingBlockId: state.editingBlockId,
+        sidebarWidth: state.sidebarWidth,
       }),
       merge: (persisted, current) => {
         const persistedState =

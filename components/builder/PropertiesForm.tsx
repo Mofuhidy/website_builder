@@ -1,7 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { PlusIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { useRef, useState } from "react";
+import {
+  ArrowUpTrayIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PhotoIcon,
+  PlusIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBuilderStore } from "@/store/builder-store";
 import { CATEGORY_REGISTRY, EditableField, JsonValue, ListItemField } from "@/lib/section-registry";
@@ -52,6 +60,25 @@ function ScalarInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isUploadedImage = field.type === "image" && value.startsWith("data:image/");
+  const hasImageValue = field.type === "image" && value.trim().length > 0;
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      const result = loadEvent.target?.result;
+      if (typeof result === "string") {
+        onChange(result);
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
   if (field.type === "textarea") {
     return (
       <textarea
@@ -63,11 +90,70 @@ function ScalarInput({
       />
     );
   }
+
+  if (field.type === "image") {
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <input
+            id={id}
+            type="url"
+            placeholder="https://..."
+            value={isUploadedImage ? "" : value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full min-w-0 px-3 py-2 text-sm border border-border-color rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors bg-gray-50 focus:bg-white"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-border-color bg-white px-3 text-xs font-semibold text-gray-600 hover:border-accent/40 hover:text-accent"
+          >
+            <ArrowUpTrayIcon className="h-4 w-4" />
+            رفع
+          </button>
+        </div>
+
+        {hasImageValue && (
+          <div className="rounded-xl border border-border-color bg-gray-50 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <PhotoIcon className="h-4 w-4" />
+                <span>{isUploadedImage ? "تم رفع صورة محلية" : "معاينة الصورة"}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange("")}
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-500 hover:bg-white hover:text-red-500"
+              >
+                <XMarkIcon className="h-3.5 w-3.5" />
+                إزالة
+              </button>
+            </div>
+            <div className="mt-3 overflow-hidden rounded-lg bg-white">
+              <img
+                src={value}
+                alt=""
+                className="h-28 w-full object-cover"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <input
       id={id}
-      type={field.type === "image" ? "url" : "text"}
-      placeholder={field.type === "image" ? "https://..." : ""}
+      type="text"
+      placeholder=""
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="w-full px-3 py-2 text-sm border border-border-color rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors bg-gray-50 focus:bg-white"
