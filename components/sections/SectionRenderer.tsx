@@ -18,6 +18,20 @@ interface SectionRendererProps {
   block: BuilderBlock;
 }
 
+const SECTION_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
+  header: HeaderSection,
+  hero: HeroSection,
+  services: ServicesSection,
+  features: FeaturesSection,
+  cta: CTASection,
+  faq: FAQSection,
+  footer: FooterSection,
+  text: TextSection,
+  contact: ContactSection,
+  gallery: GallerySection,
+  testimonials: TestimonialsSection,
+};
+
 function getDefaultData(type: string) {
   for (const category of CATEGORY_REGISTRY) {
     for (const item of category.items) {
@@ -31,35 +45,16 @@ export function SectionRenderer({ block }: SectionRendererProps) {
   const defaults = getDefaultData(block.type);
   const data = { ...defaults, ...block.data };
 
-  switch (block.type) {
-    case "header":
-      return <HeaderSection data={data} />;
-    case "hero":
-      return <HeroSection data={data} />;
-    case "services":
-      return <ServicesSection data={data} />;
-    case "features":
-      return <FeaturesSection data={data} />;
-    case "cta":
-      return <CTASection data={data} />;
-    case "faq":
-      return <FAQSection data={data} />;
-    case "footer":
-      return <FooterSection data={data} />;
-    case "text":
-      return <TextSection data={data} />;
-    case "contact":
-      return <ContactSection data={data} />;
-    case "gallery":
-      return <GallerySection data={data} />;
-    case "testimonials":
-      return <TestimonialsSection data={data} />;
-    default:
-      return (
-        <div className="p-16 border-2 border-dashed border-border-color rounded-3xl text-center text-muted-foreground bg-muted/50">
-          <p className="text-lg font-bold">قريباً: مكون [{block.type}]</p>
-          <p className="text-sm">هذا المكون تحت التطوير حالياً.</p>
-        </div>
-      );
+  const Component = SECTION_COMPONENTS[block.type];
+
+  if (Component) {
+    return <Component data={data} />;
   }
+
+  return (
+    <div className="p-16 border-2 border-dashed border-border-color rounded-3xl text-center text-muted-foreground bg-muted/50">
+      <p className="text-lg font-bold">قريباً: مكون [{block.type}]</p>
+      <p className="text-sm">هذا المكون تحت التطوير حالياً.</p>
+    </div>
+  );
 }

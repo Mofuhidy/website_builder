@@ -68,6 +68,15 @@ function ScalarInput({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Limit to 1MB to prevent localStorage overflow
+    if (file.size > 1024 * 1024) {
+      import("sonner").then(({ toast }) => {
+        toast.error("حجم الصورة كبير جداً. الحد الأقصى هو 1 ميجابايت.");
+      });
+      event.target.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (loadEvent) => {
       const result = loadEvent.target?.result;
