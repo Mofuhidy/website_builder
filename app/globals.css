@@ -136,11 +136,30 @@ body {
     @apply font-sans;
   }
   button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]) {
+  a[href],
+  summary,
+  select:not(:disabled),
+  label:has(input:not(:disabled)),
+  input[type="button"]:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="color"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [data-slot="button"]:not(:disabled) {
     cursor: pointer;
   }
   button:disabled,
-  [role="button"][aria-disabled="true"] {
+  select:disabled,
+  input:disabled,
+  [role="button"][aria-disabled="true"],
+  [role="menuitem"][aria-disabled="true"],
+  [role="tab"][aria-disabled="true"] {
     cursor: not-allowed;
   }
   button {

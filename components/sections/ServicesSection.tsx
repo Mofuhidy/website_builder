@@ -2,20 +2,14 @@
 
 import { memo } from "react";
 import { JsonValue } from "@/lib/section-registry";
-import {
-  CloudArrowUpIcon,
-  LockClosedIcon,
-  ArrowPathIcon,
-  FingerPrintIcon,
-  SparklesIcon,
-  GlobeAltIcon,
-} from "@heroicons/react/24/outline";
-
-const ICON_POOL = [CloudArrowUpIcon, LockClosedIcon, ArrowPathIcon, FingerPrintIcon, SparklesIcon, GlobeAltIcon];
+import { SectionMedia } from "./SectionMedia";
 
 interface ServiceItem {
   name: string;
   desc: string;
+  mediaType?: string;
+  icon?: string;
+  imageUrl?: string;
 }
 
 interface ServicesSectionProps {
@@ -38,21 +32,23 @@ export const ServicesSection = memo(function ServicesSection({ data }: ServicesS
           className="grid gap-8"
           style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
         >
-          {items.map((item, idx) => {
-            const Icon = ICON_POOL[idx % ICON_POOL.length];
-            return (
-              <div
-                key={idx}
-                className="flex flex-col p-8 rounded-3xl border border-border-color hover:border-accent/20 hover:shadow-2xl hover:shadow-accent/5 transition-all group"
-              >
-                <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center text-muted-foreground mb-6 group-hover:bg-accent group-hover:text-white transition-all">
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">{item.name}</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">{item.desc}</p>
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col p-8 rounded-3xl border border-border-color hover:border-accent/20 hover:shadow-2xl hover:shadow-accent/5 transition-all group"
+            >
+              <div className="w-12 h-12 overflow-hidden bg-muted rounded-2xl flex items-center justify-center text-muted-foreground mb-6 group-hover:bg-accent group-hover:text-white transition-all">
+                <SectionMedia
+                  mediaType={item.mediaType}
+                  icon={item.icon}
+                  imageUrl={item.imageUrl}
+                  label={item.name}
+                />
               </div>
-            );
-          })}
+              <h3 className="text-xl font-bold text-foreground mb-3">{item.name}</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">{item.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

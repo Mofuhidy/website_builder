@@ -15,6 +15,32 @@ function findRegistryItem(type: string) {
   return null;
 }
 
+function getListPreviewLabel(
+  item: Record<string, JsonValue>,
+  field: EditableField,
+  index: number,
+) {
+  const preferredKeys = ["alt", "caption", "label", "title", "name", "q", "text", "imageUrl"];
+
+  for (const key of preferredKeys) {
+    const value = item[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  if (field.listFields) {
+    for (const listField of field.listFields) {
+      const value = item[listField.key];
+      if (typeof value === "string" && value.trim().length > 0) {
+        return value;
+      }
+    }
+  }
+
+  return `عنصر ${index + 1}`;
+}
+
 function ScalarInput({
   field,
   id,
@@ -84,9 +110,7 @@ function ListField({
       <AnimatePresence initial={false}>
         {items.map((item, index) => {
           const isOpen = openIndex === index;
-          const previewLabel = field.listFields?.[0]
-            ? ((item[field.listFields[0].key] as string) || `عنصر ${index + 1}`)
-            : `عنصر ${index + 1}`;
+          const previewLabel = getListPreviewLabel(item, field, index);
 
           return (
             <motion.div

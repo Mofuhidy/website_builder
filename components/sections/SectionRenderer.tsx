@@ -11,6 +11,8 @@ import { FAQSection } from "./FAQSection";
 import { FooterSection } from "./FooterSection";
 import { TextSection } from "./TextSection";
 import { ContactSection } from "./ContactSection";
+import { GallerySection } from "./GallerySection";
+import { TestimonialsSection } from "./TestimonialsSection";
 
 interface SectionRendererProps {
   block: BuilderBlock;
@@ -48,6 +50,10 @@ export function SectionRenderer({ block }: SectionRendererProps) {
       return <TextSection data={data} />;
     case "contact":
       return <ContactSection data={data} />;
+    case "gallery":
+      return <GallerySection data={data} />;
+    case "testimonials":
+      return <TestimonialsSection data={data} />;
     default:
       return (
         <div className="p-16 border-2 border-dashed border-border-color rounded-3xl text-center text-muted-foreground bg-muted/50">
@@ -57,4 +63,3 @@ export function SectionRenderer({ block }: SectionRendererProps) {
       );
   }
 }
-
